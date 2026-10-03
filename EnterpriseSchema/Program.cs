@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connString = "server=localhost;port=3306;database=enterprise_db;user=root;password=pass;";
+var connString = builder.Configuration.GetConnectionString("Conn1");
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 0));
 
 builder.Services.AddDbContext<AppDbContext>(options =>

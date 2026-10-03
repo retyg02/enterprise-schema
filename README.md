@@ -5,7 +5,7 @@
 ## Стек технологий
 - Платформа: .NET 10.0 (ASP.NET Core Razor Pages)
 - СУБД: MySQL 8.0
-- ORM: Entity Framework Core 9.0 (Code-First)
+- ORM: Entity Framework Core 9.0
 
 ## Инструкция по локальному запуску
 
@@ -23,9 +23,6 @@ docker compose up -d
 ### 3. Применение миграций и запуск приложения
 Откройте проект в Visual Studio или выполните команды в терминале:
 ```bash
-# Накатить структуру таблиц и Seed-данные на базу данных
-dotnet ef database update
-
 # Запустить веб-приложение
 dotnet run
 ```
