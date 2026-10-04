@@ -12,7 +12,7 @@
         public string ConfigContent { get; set; } = string.Empty;
 
         public int? HostId { get; set; }
-        public Host? Hosts { get; set; }
+        public Host? Host { get; set; }
         public int? EnterpriseId { get; set; }
         public Enterprise? Enterprise { get; set; }
     }
