@@ -29,42 +29,37 @@ namespace EnterpriseSchema.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AccessTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ConfigContent")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("EnterpriseId")
-                        .HasColumnType("int");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int?>("HostId")
                         .HasColumnType("int");
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Pass")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("Port")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("EnterpriseId");
+                    b.HasIndex("AccessTypeId");
 
                     b.HasIndex("HostId");
 
@@ -74,38 +69,89 @@ namespace EnterpriseSchema.Migrations
                         new
                         {
                             Id = 1,
-                            Address = "vpn.stacklabs.ru",
-                            ConfigContent = "Пути к развернутым службам",
-                            EnterpriseId = 1,
-                            Login = "login",
-                            Note = "Заметка1",
-                            Pass = "pass",
-                            Port = 1111,
-                            Type = "VPN"
+                            AccessTypeId = 1,
+                            Address = "192.168.0.1",
+                            HostId = 1,
+                            Login = "root",
+                            Note = "Доступ к терминалу",
+                            Pass = "/lRxrxhBjAA8xB8Hru6kuA==",
+                            Port = 22
                         },
                         new
                         {
                             Id = 2,
-                            Address = "192.168.0.10",
-                            ConfigContent = "Пути к развернутым службам",
-                            HostId = 1,
-                            Login = "root",
-                            Note = "Заметка2",
-                            Pass = "pass",
-                            Port = 22,
-                            Type = "SSH"
+                            AccessTypeId = 2,
+                            Address = "192.168.0.2",
+                            HostId = 2,
+                            Login = "db_admin",
+                            Note = "Доступ к MySQL",
+                            Pass = "579peqYad4xZUbKwgDrEwg==",
+                            Port = 3306
+                        });
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.AccessTypeDict", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccessTypeDictionaries");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "SSH"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Database"
                         },
                         new
                         {
                             Id = 3,
-                            Address = "192.168.0.20",
-                            ConfigContent = "Пути к развернутым службам",
-                            HostId = 1,
-                            Login = "root",
-                            Note = "Заметка3",
-                            Pass = "pass",
-                            Port = 3306,
-                            Type = "DB"
+                            Name = "VPN"
+                        });
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.CityDict", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CityDictionaries");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Курган"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Челябинск"
                         });
                 });
 
@@ -117,23 +163,26 @@ namespace EnterpriseSchema.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Contact")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.ToTable("Enterprises");
 
@@ -141,7 +190,7 @@ namespace EnterpriseSchema.Migrations
                         new
                         {
                             Id = 1,
-                            City = "Курган",
+                            CityId = 1,
                             Contact = "Иванов Иван Иванович",
                             Name = "Завод1",
                             Note = "Заметка1"
@@ -149,7 +198,7 @@ namespace EnterpriseSchema.Migrations
                         new
                         {
                             Id = 2,
-                            City = "Челябинск",
+                            CityId = 2,
                             Contact = "Петров Петр Петрович",
                             Name = "Завод2",
                             Note = "Заметка2"
@@ -173,31 +222,44 @@ namespace EnterpriseSchema.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("NetworkInterfaces")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("OsName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("OsType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("OsVer")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("Purpose")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Os")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ServicesInfo")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Target")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int?>("ServiceDictId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EnterpriseId");
+
+                    b.HasIndex("ServiceDictId");
 
                     b.ToTable("Hosts");
 
@@ -210,21 +272,89 @@ namespace EnterpriseSchema.Migrations
                             Name = "Сервер1",
                             NetworkInterfaces = "IfConfig output",
                             Notes = "Свободное поле",
-                            Os = "Ubuntu 22 LTS",
-                            ServicesInfo = "Службы",
-                            Target = "СЦ (BluePyramid)"
+                            OsName = "Ubuntu",
+                            OsType = "04",
+                            OsVer = "22",
+                            Purpose = "СЦ"
                         },
                         new
                         {
                             Id = 2,
-                            EnterpriseId = 1,
+                            EnterpriseId = 2,
                             Ip = "192.168.0.2",
                             Name = "Сервер2",
-                            NetworkInterfaces = "IfConfig output",
+                            NetworkInterfaces = "ipconfig output",
                             Notes = "Свободное поле",
-                            Os = "Debian 12",
-                            ServicesInfo = "Службы",
-                            Target = "СВ (Веб интерфейс)"
+                            OsName = "Debian",
+                            OsType = "Bullseye",
+                            OsVer = "12",
+                            Purpose = "ВС"
+                        });
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.ServiceDict", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("HostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HostId");
+
+                    b.ToTable("ServiceDictionaries");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Мониторинг",
+                            HostId = 1,
+                            Name = "Zabbix Agent",
+                            Path = "/usr/bin/zbx"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "СУБД",
+                            HostId = 1,
+                            Name = "MySQL Server",
+                            Path = "/var/lib/mysql"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Веб-сервер",
+                            HostId = 1,
+                            Name = "Nginx Web Server",
+                            Path = "/etc/nginx"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Резервный веб",
+                            HostId = 2,
+                            Name = "Apache",
+                            Path = "/etc/httpd"
                         });
                 });
 
@@ -238,15 +368,18 @@ namespace EnterpriseSchema.Migrations
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Pass")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -257,24 +390,37 @@ namespace EnterpriseSchema.Migrations
                         {
                             Id = 1,
                             Login = "login",
-                            Name = "Владимир Дмитриевич",
-                            Pass = "pass"
+                            Name = "User",
+                            Pass = "AQAAAAIAAYagAAAAEI61s+YzMYlOYq2SVjb2c3olzJeSALVIxv8m51SOlCBH96rdPMUBKKcjunL76Kmg8g=="
                         });
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.Access", b =>
                 {
-                    b.HasOne("EnterpriseSchema.Models.Enterprise", "Enterprise")
+                    b.HasOne("EnterpriseSchema.Models.AccessTypeDict", "AccessType")
                         .WithMany("Accesses")
-                        .HasForeignKey("EnterpriseId");
+                        .HasForeignKey("AccessTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("EnterpriseSchema.Models.Host", "Hosts")
+                    b.HasOne("EnterpriseSchema.Models.Host", "Host")
                         .WithMany("Accesses")
                         .HasForeignKey("HostId");
 
-                    b.Navigation("Enterprise");
+                    b.Navigation("AccessType");
 
-                    b.Navigation("Hosts");
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.Enterprise", b =>
+                {
+                    b.HasOne("EnterpriseSchema.Models.CityDict", "City")
+                        .WithMany("Enterprises")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.Host", b =>
@@ -285,19 +431,49 @@ namespace EnterpriseSchema.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EnterpriseSchema.Models.ServiceDict", null)
+                        .WithMany("Hosts")
+                        .HasForeignKey("ServiceDictId");
+
                     b.Navigation("Enterprise");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.ServiceDict", b =>
+                {
+                    b.HasOne("EnterpriseSchema.Models.Host", "Host")
+                        .WithMany("Services")
+                        .HasForeignKey("HostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.AccessTypeDict", b =>
+                {
+                    b.Navigation("Accesses");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.CityDict", b =>
+                {
+                    b.Navigation("Enterprises");
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.Enterprise", b =>
                 {
-                    b.Navigation("Accesses");
-
                     b.Navigation("Hosts");
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.Host", b =>
                 {
                     b.Navigation("Accesses");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.ServiceDict", b =>
+                {
+                    b.Navigation("Hosts");
                 });
 #pragma warning restore 612, 618
         }

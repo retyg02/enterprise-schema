@@ -1,9 +1,10 @@
 ﻿@page
 @model EnterpriseSchema.Pages.EnterpriseDetailsModel
+@using System.Text.Encodings.Web
 @{
 	ViewData["Title"] = "Детали предприятия";
 }
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto max-w-7xl px-6 lg:px-8 py-8">
     
     <div class="mb-6">
         <a asp-page="/Index" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">
@@ -15,7 +16,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 mt-1">@Model.Enterprise?.Name</h1>
-                <p class="text-sm text-gray-500 mt-2">📍 <span class="text-gray-800 font-medium">@Model.Enterprise?.City</span></p>
+                <p class="text-sm text-gray-500 mt-2">📍 <span class="text-gray-800 font-medium">@Model.Enterprise?.City?.Name</span></p>
             </div>
             <div class="mt-4 md:mt-0 bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-md">
                 <span class="text-xs font-medium text-gray-400 block mb-1">👤 Контакт:</span>
@@ -29,56 +30,97 @@
         </div>
     </div>
 
-    <div class="mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
-            🌐 Доступы 
-        </h2>
-        <div class="flex flex-col space-y-3">
-            @if (Model.Enterprise?.Accesses != null && Model.Enterprise.Accesses.Any())
-            {
-                @foreach (var access in Model.Enterprise.Accesses)
-                {
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 flex flex-wrap justify-between items-center shadow-sm">
-                        <div class="flex items-center space-x-4">
-                            <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase bg-blue-100 text-blue-800">@access.Type</span>
-                            <span class="text-sm font-mono text-gray-700">@access.Address : @access.Port</span>
-                        </div>
-                        <div class="flex space-x-6 text-sm mt-2 sm:mt-0">
-                            <div><span class="text-gray-400">Логин:</span> <span class="font-medium text-gray-800">@access.Login</span></div>
-                            <div><span class="text-gray-400">Пароль:</span> <span class="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-red-600">@access.Pass</span></div>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <p class="text-sm text-gray-400 italic pl-2">Здесь ничего нет</p>
-            }
-        </div>
-    </div>
+   <!--тут были доступы напрямую у предприятия-->
 
     <div>
-        <h2 class="text-xl font-bold text-gray-900 mb-4">🖥️ Хосты</h2>
+        <div class="flex md:flex-row md:items-center justify-between mb-4 flex-col">
+        <h2 class="text-xl font-bold text-gray-900 flex flex-row row items-center">
+            🖥️ Хосты
+            <span id="hostsCounter" class="ml-[10px] relative top-[2px] bg-gray-100 text-gray-700 text-xs font-bold px-2.5 py-1 rounded-full border border-gray-200">
+                @Model.Enterprise?.Hosts?.Count
+            </span>
+        </h2>
+        <div class="relative flex flex-row mt-[10px] md:mt-auto">
+
+            
+            <div class="relative w-full md:w-auto mr-[5px]">
+            <input type="text" id="hostSearchInput" oninput="filterHosts()" placeholder="Поиск по имени, службам, кредам..."
+                   class="md:mt-auto w-full bg-white border border-gray-300 rounded-lg pl-9 pr-8 py-1.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder-gray-400 shadow-sm" />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            </div>
+            
+            <button type="button" id="clearHostSearchBtn" onclick="clearHostSearch()" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                <svg xmlns="http://w3.org" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <button type="button" onclick="openModal('createHostModal')" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-3 rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
+                + Добавить хост
+            </button>
+        </div>
+        </div>
 
         <div class="flex flex-col space-y-6">
             @if (Model.Enterprise?.Hosts != null && Model.Enterprise.Hosts.Any())
             {
                 @foreach (var host in Model.Enterprise.Hosts)
                 {
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                    <div id="host-card-@host.Id" class="host-card bg-white border border-gray-200 rounded-xl shadow-sm p-6">
 
                         <div class="flex flex-wrap justify-between items-start border-b border-gray-100 pb-4 mb-4">
                             <div>
-                                <h3 class="text-lg font-bold text-indigo-900">@host.Name</h3>
+                                
+                                
+                                
+                                
+                                <h3 class="mb-[20px] text-lg font-bold text-indigo-900 flex flex-row items-center">
+                                    @host.Name
+                                    <form method="post" onsubmit="submitDeleteHost(event, @host.Id, '@host.Name')" class="inline">
+                                        <button type="submit" class="relative top-[2px] left-[5px] text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" title="Удалить сервер">
+                                            <svg xmlns="http://w3.org" class="h-4 w-4 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </form>
+
+                                    <button type="button" onclick="openUpdateHostModal(@host.Id, '@host.Name', '@host.Ip', '@host.Purpose', '@host.OsName', '@host.OsVer', '@host.OsType', '@JavaScriptEncoder.Default.Encode(host.NetworkInterfaces)', '@host.Notes')" class="ml-[5px] relative top-[1px] text-gray-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-indigo-50 focus:outline-none mr-1" title="Редактировать сервер">
+                                        <svg xmlns="http://w3.org" class="h-4 w-4 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+
+                                </h3>
+
+                                
+
+
                                 <div class="flex items-center space-x-3 mt-1 text-xs text-gray-500">
-                                    <span>⚙️ ОС: <strong class="text-gray-700">@host.Os</strong></span>
+                                    
+                                    <div class="flex flex-wrap gap-2 items-center text-xs font-mono">
+                                        <span class="text-gray-500 font-sans text-sm">ОС:</span>
+                                        <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 font-bold">
+                                            @host.OsName
+                                        </span>
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded border border-gray-200">
+                                            @host.OsVer
+                                        </span>
+                                        <span class="bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 text-[11px] uppercase tracking-wider font-semibold">
+                                            @host.OsType
+                                        </span>
+                                    </div>
+
                                     <span>•</span>
-                                    <span>Назначение: <strong class="text-gray-700">@host.Target</strong></span>
+                                    <span>Назначение: <strong class="text-gray-700">@host.Purpose</strong></span>
                                 </div>
                             </div>
                             <div class="mt-2 sm:mt-0 text-right">
-                                <span class="text-xs text-gray-400 block">IP:</span>
-                                <span class="text-sm font-mono font-bold text-gray-900 bg-gray-50 px-2 py-1 rounded border border-gray-100">@host.Ip</span>
+                                
+                                <span class="text-sm font-mono font-bold text-gray-900 bg-gray-50 px-2 py-1 rounded border border-gray-100">IP: @host.Ip</span>
                             </div>
                         </div>
 
@@ -87,10 +129,42 @@
                             <pre class="bg-gray-900 text-green-400 p-3 rounded-lg text-xs font-mono overflow-x-auto whitespace-pre-wrap">@host.NetworkInterfaces</pre>
                         </div>
 
-                        <div class="mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs flex flex-col space-y-1">
-                            <span class="text-gray-400 font-semibold uppercase tracking-wider text-[10px]">Развернутые службы и пути:</span>
-                            <p class="text-gray-800 font-mono whitespace-pre-line">@host.ServicesInfo</p>
+                        <div class="mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs flex flex-col space-y-3">
+                            
+                            
+                            <span class="text-gray-400 font-semibold uppercase block mb-1">
+                                
+
+                                Развернутые службы и пути:
+                            </span>
+
+                            @if (host.Services != null && host.Services.Any())
+                            {
+                                @foreach (var service in host.Services)
+                                {
+                                    <div id="service-card-@service.Id" class="border-b border-gray-200 last:border-0 pb-2 last:pb-0 flex flex-col space-y-1">
+                                        <div class="flex flex-row items-center justify-start text-gray-900 font-bold">
+                                            
+                                            ● @service.Name
+                                            <form method="post" onsubmit="submitDeleteService(event, @service.Id, '@service.Name')" class="relative bottom-[1px] inline">
+                                                <button type="submit" class="relative top-[2px] left-[5px] text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" title="Удалить сервер">
+                                                    <svg xmlns="http://w3.org" class="h-4 w-4 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <p class="text-gray-600 italic pl-3">@service.Description</p>
+                                        <pre class="bg-white p-2 rounded border border-gray-100 font-mono text-indigo-600 overflow-x-auto whitespace-pre-wrap mt-1 ml-3">Путь: @service.Path</pre>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-gray-400 italic">Службы не зарегистрированы</p>
+                            }
                         </div>
+
 
                         @if (!string.IsNullOrEmpty(host.Notes))
                         {
@@ -101,7 +175,12 @@
                         }
 
                         <div class="mt-6 pt-4 border-t border-gray-100">
-                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-3">Доступы к хосту:</span>
+                            <div class="flex flex-row justify-between items-center text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-3">
+                                <span>Доступы к хосту:</span>
+                                <button type="button" onclick="openCreateAccessModal(@host.Id)" class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold flex items-center focus:outline-none">
+                                    + Добавить доступы
+                                </button>
+                            </div>
                             <div class="flex flex-col space-y-2">
                                 @if (host.Accesses != null && host.Accesses.Any())
                                 {
@@ -110,19 +189,52 @@
                                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col space-y-2 text-xs">
                                             <div class="flex flex-wrap justify-between items-center">
                                                 <div class="flex items-center space-x-3">
-                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-200 text-gray-700">@acc.Type</span>
+
+                                                    <form method="post" onsubmit="submitDeleteAccess(event, @acc.Id, '@acc.Login', @host.Id)" class="inline">
+                                                        <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50 focus:outline-none" title="Удалить параметры доступа">
+                                                            <svg xmlns="http://w3.org" class="h-3.5 w-3.5 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-200 text-gray-700">@acc.AccessType?.Name</span>
                                                     <span class="font-mono text-gray-600">@acc.Address:@acc.Port</span>
                                                 </div>
+
+
+                                                
+
+
                                                 <div class="flex space-x-4 mt-1 sm:mt-0">
-                                                    <div><span class="text-gray-400">Логин:</span> <span class="font-medium text-gray-800">@acc.Login</span></div>
-                                                    <div><span class="text-gray-400">Пароль:</span> <span class="font-mono text-red-600 bg-white px-1 border border-gray-200 rounded">@acc.Pass</span></div>
+                                                    <div>
+                                                        <span class="text-gray-400">Логин:</span> 
+                                                        <span class="font-medium text-gray-800">
+                                                            <span onclick="copyToClipboard(this, '@acc.Login')" class="text-gray-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors" title="Нажмите, чтобы скопировать">
+                                                                @acc.Login
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-400">Пароль:</span> 
+                                                        <span id="pass-text-@acc.Id" onclick="copyToClipboard(this, '@EnterpriseSchema.Data.CryptoHelper.Decrypt(acc.Pass)')" 
+                                                            class="text-gray-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors font-sans" title="Нажмите, чтобы скопировать">
+                                                            ••••••••
+                                                        </span>
+                                                    </div>
+                                                    <button type="button" onclick="togglePassword(@acc.Id, '@EnterpriseSchema.Data.CryptoHelper.Decrypt(acc.Pass)')" class="text-gray-400 hover:text-gray-600 p-0.5 focus:outline-none" title="Показать/Скрыть пароль">
+                                                        <svg xmlns="http://w3.org" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="eye-icon-@acc.Id">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </div>
-                                            @if (!string.IsNullOrEmpty(acc.ConfigContent))
+                                            @if (!string.IsNullOrEmpty(acc.Note))
                                             {
                                                 <div class="mt-2 pt-2 border-t border-gray-200/60">
                                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block mb-1">Инструкция:</span>
-                                                    <pre class="bg-white p-2 rounded border border-gray-200 text-[11px] font-mono text-gray-600 overflow-x-auto whitespace-pre-wrap">@acc.ConfigContent</pre>
+                                                    <pre class="bg-white p-2 rounded border border-gray-200 text-[11px] font-mono text-gray-600 overflow-x-auto whitespace-pre-wrap">@acc.Note</pre>
                                                 </div>
                                             }
                                         </div>
@@ -149,3 +261,278 @@
 
 
 </div>
+
+
+
+
+
+
+<div id="createHostModal" onclick="checkOverlayClose(event, 'createHostModal')" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm items-end md:items-center justify-center z-50 transition-opacity duration-300 p-0 md:p-4 opacity-0">
+    <div class="bg-white rounded-t-2xl md:rounded-xl shadow-xl border border-gray-200 p-6 max-w-md w-full relative transition-transform duration-300 translate-y-full md:scale-95 max-h-[92vh] overflow-y-auto">
+        
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 md:hidden"></div>
+        <button type="button" onclick="closeModal('createHostModal', true)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg focus:outline-none">&times;</button>
+        
+        <h3 class="text-base font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Новый Хост</h3>
+
+        <form method="post" id="ajaxHostForm" onsubmit="submitHostForm(event)" class="space-y-3 text-xs">
+            
+            <div id="hostErrorSummary" class="hidden text-red-600 font-semibold bg-red-50 p-3 rounded-lg mb-3 border border-red-100"></div>
+
+            <input type="hidden" id="hostEnterpriseId" value="@Model.Enterprise?.Id" />
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Имя хоста</label>
+                <input type="text" id="hostName" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="например, server-docker-01" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">IP-адрес IPv4</label>
+                <input type="text" id="hostIp" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="192.168.1.50" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Назначение (Purpose)</label>
+                <input type="text" id="hostPurpose" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="СЦ / ВС / Свободное назначение" />
+            </div>
+
+            
+
+
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block font-semibold text-gray-500 uppercase mb-1">Имя ОС</label>
+                    <input type="text" id="hostOsName" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Ubuntu" />
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-500 uppercase mb-1">Версия</label>
+                    <input type="text" id="hostOsVer" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="24" />
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-500 uppercase mb-1">Архит.</label>
+                    <input type="text" id="hostOsType" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="04" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Сетевые интерфейсы (ifconfig)</label>
+                <textarea id="hostNetInterfaces" rows="2" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="eth0: flags=4163<UP,BROADCAST,RUNNING>..."></textarea>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Заметки (Необязательно)</label>
+                <input type="text" id="hostNotes" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Комментарий к серверу..." />
+            </div>
+
+            <div class="pt-2 flex space-x-3 text-sm">
+                <button type="button" onclick="closeModal('createHostModal', true)" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg shadow-sm transition-colors">Создать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div id="createAccessModal" onclick="checkOverlayClose(event, 'createAccessModal', true)" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm items-end md:items-center justify-center z-50 transition-opacity duration-300 p-0 md:p-4 opacity-0">
+    <div class="bg-white rounded-t-2xl md:rounded-xl shadow-xl border border-gray-200 p-6 max-w-md w-full relative transition-transform duration-300 translate-y-full md:scale-95 max-h-[92vh] overflow-y-auto">
+        
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 md:hidden"></div>
+        <button type="button" onclick="closeModal('createAccessModal', true)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg focus:outline-none">&times;</button>
+        
+        <h3 class="text-base font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Новый доступ к хосту</h3>
+
+        <form method="post" id="ajaxAccessForm" onsubmit="submitAccessForm(event)" class="space-y-3 text-xs">
+            <div id="accessErrorSummary" class="hidden text-red-600 font-semibold bg-red-50 p-3 rounded-lg mb-3 border border-red-100"></div>
+
+            <input type="hidden" id="accessHostId" />
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Тип доступа (Справочник)</label>
+                <div class="flex space-x-2">
+                    <select id="accessAccessTypeId" asp-items="Model.AccessTypeList" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="">-- Выберите тип (SSH/DB/VPN) --</option>
+                    </select>
+                    <button type="button" onclick="openModal('accessTypeModal')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 rounded-lg text-sm focus:outline-none transition-colors" title="Добавить новый тип доступа">+</button>
+                </div>
+
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Сетевой адрес (IP или домен)</label>
+                <input type="text" id="accessAddress" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="192.168.0.10" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Порт подключения</label>
+                <input type="number" id="accessPort" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="22" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Логин</label>
+                <input type="text" id="accessLogin" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="root" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Пароль</label>
+                <input type="text" id="accessPass" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="••••••••" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Примечание / Инструкция (Необязательно)</label>
+                <input type="text" id="accessNote" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Например, доступ только по ключу..." />
+            </div>
+
+            <div class="pt-2 flex space-x-3 text-sm">
+                <button type="button" onclick="closeModal('createAccessModal', true)" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg shadow-sm transition-colors">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="accessTypeModal" class="hidden fixed inset-0 bg-gray-950/20 backdrop-blur-xs items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5 max-w-xs w-full relative transition-transform duration-300 scale-95">
+        <h4 class="text-sm font-bold text-gray-900 mb-3">Новый тип доступа</h4>
+        <form method="post" id="ajaxAccessTypeForm" onsubmit="submitAccessTypeForm(event)">
+            <input type="text" id="accessTypeNameInput" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none mb-3" placeholder="Например, RDP / HTTP" />
+            <div class="flex space-x-2">
+                <button type="button" onclick="closeModal('accessTypeModal')" class="w-1/2 bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs py-2 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-2 rounded-lg shadow-sm transition-colors">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="updateHostModal" onclick="checkOverlayClose(event, 'updateHostModal', true)" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm items-end md:items-center justify-center z-50 transition-opacity duration-300 p-0 md:p-4 opacity-0">
+    <div class="bg-white rounded-t-2xl md:rounded-xl shadow-xl border border-gray-200 p-6 max-w-md w-full relative transition-transform duration-300 translate-y-full md:scale-95 max-h-[92vh] overflow-y-auto">
+        
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 md:hidden"></div>
+        <button type="button" onclick="closeModal('updateHostModal', true)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg focus:outline-none">&times;</button>
+        
+        <h3 class="text-base font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Редактировать сервер</h3>
+
+        <form id="ajaxUpdateHostForm" method="post" onsubmit="submitUpdateHostForm(event)" class="space-y-3 text-xs">
+            <div id="updateHostErrorSummary" class="hidden text-red-600 font-semibold bg-red-50 p-3 rounded-lg mb-3 border border-red-100"></div>
+
+            <input type="hidden" id="updateHostId" />
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Имя хоста</label>
+                <input type="text" id="updateHostName" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">IP-адрес</label>
+                <input type="text" id="updateHostIp" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Назначение (Purpose)</label>
+                <input type="text" id="updateHostPurpose" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block font-semibold text-gray-500 uppercase mb-1">Имя ОС</label>
+                    <input type="text" id="updateHostOsName" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-500 uppercase mb-1">Версия</label>
+                    <input type="text" id="updateHostOsVer" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-500 uppercase mb-1">Архит.</label>
+                    <input type="text" id="updateHostOsType" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Сетевые интерфейсы</label>
+                <textarea id="updateHostNetInterfaces" rows="2" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-1">Заметки</label>
+                <input type="text" id="updateHostNotes" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 space-y-3">
+                <div class="flex justify-between items-stretch md:items-center">
+                    <span class="font-semibold text-gray-500 uppercase tracking-wider">Развернутые службы</span>
+                    <button type="button" onclick="openServiceModal()" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-2 py-1 rounded-md text-[10px] font-bold focus:outline-none transition-colors">
+                        + Добавить службу
+                    </button>
+                </div>
+    
+    
+                <div id="addedServicesList" class="space-y-1.5 max-h-32 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="pt-2 flex space-x-3 text-sm">
+                <button type="button" onclick="clearHostFormAdditions()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg shadow-sm transition-colors">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+<div id="serviceModal" class="hidden fixed inset-0 bg-gray-950/20 backdrop-blur-xs items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5 max-w-xs w-full relative transition-transform duration-300 scale-95 text-xs">
+        <h4 class="text-sm font-bold text-gray-900 mb-3">Новая служба в справочник хоста</h4>
+        <form id="ajaxServiceForm" method="post" onsubmit="submitServiceForm(event)" class="space-y-3">
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-0.5">Название службы</label>
+                <input type="text" id="serviceNameInput" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="например, PostgreSQL" />
+            </div>
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-0.5">Описание</label>
+                <input type="text" id="serviceDescInput" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Основная БД данных" />
+            </div>
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase mb-0.5">Физический путь (Path)</label>
+                <input type="text" id="servicePathInput" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-1.5 font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="/var/lib/postgresql" />
+            </div>
+            
+            <div class="flex space-x-2 pt-1">
+                <button type="button" onclick="closeModal('serviceModal')" class="w-1/2 bg-gray-50 hover:bg-gray-100 text-gray-600 py-2 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg shadow-sm transition-colors">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/js/enterpriseDetails.js" asp-append-version="true"></script>
+    <partial name="_ValidationScriptsPartial" />
+}
