@@ -1,0 +1,231 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="container mx-auto max-w-7xl px-6 lg:px-8 py-8">
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-gray-200 pb-6 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Реестр развертываний</h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Список подключенных предприятий
+                <span class="ml-3 bg-indigo-50 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full border border-indigo-100">
+                    @Model.Enterprises?.Count
+                </span>
+            </p>
+        </div>
+
+        <button onclick="openModal('createModal')" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg text-sm shadow-sm transition-colors focus:outline-none">
+            + Добавить предприятие
+        </button>
+    </div>
+
+    <div class="flex flex-wrap -mx-4">
+
+        @if (Model.Enterprises != null && Model.Enterprises.Any())
+        {
+            @foreach (var enterprise in Model.Enterprises)
+            {
+                <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6 flex">
+                    <div id="enterprise-card-@enterprise.Id" class="bg-white rounded-xl shadow-sm border border-gray-200 transition-all ease-in-out hover:border-indigo-400 p-6 flex flex-col justify-between w-full hover:shadow-md transition-shadow duration-500">
+
+                        <div>
+
+                            
+
+
+                            <div class="flex justify-between items-start mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">@enterprise.Name</h2>
+                            </div>
+
+                            <div class="space-y-3 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-400 w-24 flex-shrink-0">📍 Город:</span>
+                                    <span class="text-gray-900">@enterprise.City?.Name</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <span class="font-medium text-gray-400 w-24 flex-shrink-0">👤 Контакт:</span>
+                                    <span class="text-gray-900">@enterprise.Contact</span>
+                                </div>
+                                <div class="flex flex-col mt-2 pt-2 border-t border-gray-100">
+                                    <span class="font-medium text-gray-400 mb-1">📝 Заметки:</span>
+                                    <p class="text-gray-600 text-xs italic line-clamp-2">@enterprise.Note</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <div class="flex-row items-center">
+
+                            
+                            <button type="button" onclick="openUpdateModal(@enterprise.Id, '@enterprise.Name', @enterprise.CityId, '@enterprise.Contact', '@enterprise.Note')" class="text-gray-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-indigo-50 focus:outline-none mr-1" title="Редактировать предприятие">
+                                <svg xmlns="http://w3.org" class="h-6 w-6 hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </button>
+
+                            <form method="post" onsubmit="submitDelete(event, @enterprise.Id, '@enterprise.Name')" class="inline">
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" title="Удалить предприятие">
+                                    <svg xmlns="http://w3.org" class="h-6 w-6 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                            </div>
+                            <a asp-page="/EnterpriseDetails" asp-route-id="@enterprise.Id" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                                Открыть →
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="w-full px-4 py-12 text-center bg-gray-50 rounded-xl border border-dashed border-gray-300 mx-4">
+                <p class="text-gray-500 font-medium">Ничего не найдено</p>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+
+
+<div id="createModal" onclick="checkOverlayClose(event, 'createModal', true)" class="@(ViewData["OpenCreateModal"] != null ? "flex" : "hidden") fixed inset-0 bg-gray-900/40 backdrop-blur-sm items-end md:items-center justify-center z-50 transition-opacity duration-300 p-0 md:p-4 opacity-0">
+
+    
+    <div class="bg-white rounded-t-2xl md:rounded-xl shadow-xl border border-gray-200 p-6 max-w-md w-full relative transition-transform duration-300 translate-y-0 max-h-[92vh] overflow-y-auto">
+        
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 md:hidden"></div>
+
+        <button type="button" onclick="closeModal('createModal', true)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg focus:outline-none">&times;</button>
+        
+        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Новое предприятие</h3>
+
+        <div id="enterpriseErrorSummary" class="hidden text-red-600 font-semibold bg-red-50 p-3 rounded-lg mb-3 border border-red-100 text-xs"></div>
+
+        <form method="post" asp-page-handler="Create" id="ajaxEnterpriseForm" onsubmit="submitEnterpriseForm(event)" class="space-y-4">
+            <div id="enterpriseErrorSummary" class="hidden text-red-600 text-xs font-semibold bg-red-50 p-3 rounded-lg mb-4 border border-red-100"></div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Название</label>
+                <input id="NewEnterprise_Name" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Новое предприятие" />
+                <span class="text-red-500 text-xs mt-1 block"></span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Город</label>
+                <div class="flex space-x-2">
+                    <select id="NewEnterprise_CityId" asp-items="Model.CityList" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="">-- Выберите город --</option>
+                    </select>
+    
+                    <button type="button" onclick="openModal('cityModal')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 rounded-lg text-sm focus:outline-none transition-colors" title="Добавить новый город">+</button>
+                </div>
+                <span class="text-red-500 text-xs mt-1 block"></span>
+
+
+                
+
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Контакты</label>
+                <input id="NewEnterprise_Contact" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="ФИО, телефон" />
+                <span class="text-red-500 text-xs mt-1 block"></span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Примечание</label>
+                <textarea id="NewEnterprise_Note" rows="2" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Дополнительно..."></textarea>
+            </div>
+
+            <div class="pt-2 flex space-x-3">
+                <button type="button" onclick="closeModal('createModal', true)" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg text-sm transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm shadow-sm transition-colors">Создать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+<div id="updateModal" onclick="checkOverlayClose(event, 'updateModal', true)" class="hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm items-end md:items-center justify-center z-50 transition-opacity duration-300 p-0 md:p-4 opacity-0">
+    
+    <div class="bg-white rounded-t-2xl md:rounded-xl shadow-xl border border-gray-200 p-6 max-w-md w-full relative transition-transform duration-300 translate-y-full md:scale-95 max-h-[92vh] overflow-y-auto">
+        
+        <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 md:hidden"></div>
+        <button type="button" onclick="closeModal('updateModal', true)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg focus:outline-none">&times;</button>
+        
+        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Редактировать предприятие</h3>
+
+        <div id="editEnterpriseErrorSummary" class="hidden text-red-600 font-semibold bg-red-50 p-3 rounded-lg mb-3 border border-red-100 text-xs"></div>
+
+
+        <form method="post" asp-page-handler="Update" id="ajaxUpdateForm" onsubmit="submitUpdateForm(event)" class="space-y-4">
+            <div id="updateErrorSummary" class="hidden text-red-600 text-xs font-semibold bg-red-50 p-3 rounded-lg mb-4 border border-red-100"></div>
+            <input type="hidden" id="updateId" />
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Название</label>
+                <input id="updateName" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                <span class="text-red-500 text-xs mt-1 block"></span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Город</label>
+                <select id="updateCityId" asp-items="Model.CityList" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="">-- Выберите город --</option>
+                </select>
+                <span class="text-red-500 text-xs mt-1 block"></span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Контакты</label>
+                <input id="updateContact" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                <span class="text-red-500 text-xs mt-1 block"></span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Примечание</label>
+                <textarea id="updateNote" rows="2" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+
+            <div class="pt-2 flex space-x-3">
+                <button type="button" onclick="closeModal('updateModal', true)" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-lg text-sm transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm shadow-sm transition-colors">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+<div id="cityModal" class="hidden fixed inset-0 bg-gray-950/20 backdrop-blur-xs items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5 max-w-xs w-full relative transition-transform duration-300 scale-95">
+        <h4 class="text-sm font-bold text-gray-900 mb-3">Новый город в справочник</h4>
+        <form method="post" asp-page-handler="CreateCity" id="ajaxCityForm" onsubmit="submitCityForm(event)">
+            <input type="text" id="cityNameInput" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none mb-3" placeholder="Например, Самара" />
+            <div class="flex space-x-2">
+                <button type="button" onclick="closeModal('cityModal')" class="w-1/2 bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs py-2 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-2 rounded-lg shadow-sm transition-colors">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/js/index.js" asp-append-version="true"></script>
+    <partial name="_ValidationScriptsPartial" />
+}
