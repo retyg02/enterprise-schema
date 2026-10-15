@@ -29,52 +29,57 @@
             @foreach (var enterprise in Model.Enterprises)
             {
                 <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6 flex">
-                    <div id="enterprise-card-@enterprise.Id" class="bg-white rounded-xl shadow-sm border border-gray-200 transition-all ease-in-out hover:border-indigo-400 p-6 flex flex-col justify-between w-full hover:shadow-md transition-shadow duration-500">
+                    <div id="enterprise-card-@enterprise.Id" class="bg-white rounded-xl shadow-sm border border-gray-200 transition-all ease-in-out hover:border-indigo-400 p-4 flex flex-col justify-between w-full hover:shadow-md transition-shadow duration-500">
 
-                        <div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
 
-                            
-
-
-                            <div class="flex justify-between items-start mb-4">
-                                <h2 class="text-xl font-semibold text-gray-800">@enterprise.Name</h2>
-                            </div>
-
-                            <div class="space-y-3 text-sm text-gray-600">
-                                <div class="flex items-center">
-                                    <span class="font-medium text-gray-400 w-24 flex-shrink-0">📍 Город:</span>
-                                    <span class="text-gray-900">@enterprise.City?.Name</span>
+                            <div class="space-y-2 border-r border-gray-100 pr-2">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h2 class="text-base font-semibold text-gray-800 line-clamp-1">@enterprise.Name</h2>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="font-medium text-gray-400 w-24 flex-shrink-0">👤 Контакт:</span>
-                                    <span class="text-gray-900">@enterprise.Contact</span>
+                                <div class="flex items-center text-gray-600">
+                                    <span class="font-medium text-gray-400 w-16 flex-shrink-0">📍 Город:</span>
+                                    <span class="text-gray-800 truncate">@enterprise.City?.Name</span>
                                 </div>
-                                <div class="flex flex-col mt-2 pt-2 border-t border-gray-100">
-                                    <span class="font-medium text-gray-400 mb-1">📝 Заметки:</span>
-                                    <p class="text-gray-600 text-xs italic line-clamp-2">@enterprise.Note</p>
+                                <div class="flex items-center text-gray-600">
+                                    <span class="font-medium text-gray-400 w-16 flex-shrink-0">📱 Контакт:</span>
+                                    <span class="text-gray-800 truncate">@enterprise.Contact</span>
                                 </div>
                             </div>
+
+                            <div class="flex flex-col justify-start">
+                                <span class="font-medium text-gray-400 mb-1 relative top-[2px]">📝 Заметки:</span>
+                                <p class="text-gray-600 italic line-clamp-3 text-[11px] leading-relaxed">@enterprise.Note</p>
+                            </div>
+
                         </div>
 
                         <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
                             <div class="flex-row items-center">
 
                             
-                            <button type="button" onclick="openUpdateModal(@enterprise.Id, '@enterprise.Name', @enterprise.CityId, '@enterprise.Contact', '@enterprise.Note')" class="text-gray-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-indigo-50 focus:outline-none mr-1" title="Редактировать предприятие">
+                            <button type="button" onclick="openUpdateModal(@enterprise.Id, '@enterprise.Name', @enterprise.CityId, '@enterprise.Contact', '@enterprise.Note')" 
+                                class="text-gray-400 hover:text-indigo-600 transition-colors p-1 rounded-md hover:bg-indigo-50 focus:outline-none mr-1" 
+                                title="Редактировать предприятие">
                                 <svg xmlns="http://w3.org" class="h-6 w-6 hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </button>
 
                             <form method="post" onsubmit="submitDelete(event, @enterprise.Id, '@enterprise.Name')" class="inline">
-                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" title="Удалить предприятие">
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" 
+                                    title="Удалить предприятие">
                                     <svg xmlns="http://w3.org" class="h-6 w-6 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
                             </form>
                             </div>
-                            <a asp-page="/EnterpriseDetails" asp-route-id="@enterprise.Id" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                            <a asp-page="/EnterpriseDetails" asp-route-id="@enterprise.Id" class="inline-flex items-center justify-center px-4 py-2 border 
+                                border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
+                                focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
                                 Открыть →
                             </a>
                         </div>
@@ -226,6 +231,6 @@
 
 
 @section Scripts {
-    <script src="~/js/index.js" asp-append-version="true"></script>
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/index.js" asp-append-version="true"></script>
 }

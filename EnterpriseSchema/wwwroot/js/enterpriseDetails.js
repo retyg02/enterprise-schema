@@ -44,17 +44,24 @@ function clearHostSearch() {
 
 function openModal(id) {
     const modal = document.getElementById(id);
+    if (!modal) return;
+    if (modal.firstElementChild) {
+        modal.firstElementChild.classList.remove('translate-y-full', 'md:scale-95');
+    }
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.body.classList.add('overflow-hidden');
     setTimeout(() => {
         modal.classList.add('opacity-100');
-        modal.firstElementChild.classList.remove('translate-y-full', 'md:scale-95');
+        if (modal.firstElementChild) {
+            modal.firstElementChild.classList.add('translate-y-0', 'md:scale-100');
+        }
     }, 10);
 }
 
 function closeModal(id, isNotModal = false) {
     const modal = document.getElementById(id);
+    if (!modal) return;
     modal.classList.remove('opacity-100');
     modal.firstElementChild.classList.add('translate-y-full', 'md:scale-95');
     if (isNotModal) {
@@ -392,6 +399,10 @@ let tempServices = [];
 
 function openServiceModal() {
     const modal = document.getElementById('serviceModal');
+    if (!modal) return;
+    if (modal.firstElementChild) {
+        modal.firstElementChild.classList.remove('translate-y-full', 'md:scale-95');
+    }
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     setTimeout(() => {
@@ -403,6 +414,7 @@ function openServiceModal() {
 
 function closeServiceModal() {
     const modal = document.getElementById('serviceModal');
+    if (!modal) return;
     modal.classList.remove('opacity-100');
     modal.firstElementChild.classList.add('scale-95');
     setTimeout(() => {
