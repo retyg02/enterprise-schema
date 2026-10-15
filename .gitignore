@@ -2,4 +2,3 @@ bin/
 obj/
 .vs/
 .env
-docker-compose.yml
