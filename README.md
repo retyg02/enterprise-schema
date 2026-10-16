@@ -62,6 +62,6 @@ docker compose version
    ```
 2. Запустите сборку и старт веб-приложения с базой данных в фоновом режиме:
    ```bash
-   sudo docker compose -f docker-compose.server.yml up -d --build
+   sudo docker compose -f docker-compose.server.yml up -d
    ```
 3. Приложение развернется в контейнерах, автоматически выполнит миграции базы данных и станет доступно по внешнему IP-адресу сервера на стандартном порту 80.
