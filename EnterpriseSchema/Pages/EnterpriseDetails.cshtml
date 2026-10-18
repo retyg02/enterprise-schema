@@ -15,18 +15,29 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 mt-1">@Model.Enterprise?.Name</h1>
+                <div class="text-3xl font-bold text-gray-900 mt-1 flex flex-row">
+                    @Model.Enterprise?.Name
+                    <button type="button" id="paranoia-toggle-btn" onclick="toggleParanoiaMode()" title="Блюр" class="relative top-[2px] flex items-center justify-center p-2 text-gray-400 hover:text-emerald-500 rounded-lg transition-all duration-300 cursor-pointer focus:outline-none">
+                        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 transition-transform duration-300">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644M21.964 12.322a1.012 1.012 0 010-.644M5.93 5.93l1.242 1.242M16.828 16.828l1.242 1.242M18.07 5.93l-1.242 1.242M7.172 16.828L5.93 18.07" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>
+
+                </div>
                 <p class="text-sm text-gray-500 mt-2">📍 <span class="text-gray-800 font-medium">@Model.Enterprise?.City?.Name</span></p>
+                <p class="text-sm text-gray-500 mt-2">📅 <span class="text-gray-800 font-medium">@Model.Enterprise?.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span></p>
             </div>
-            <div class="mt-4 md:mt-0 bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-md">
+            <div id="contact-section" class="mt-4 md:mt-0 bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-md">
                 <span class="text-xs font-medium text-gray-400 block mb-1">👤 Контакт:</span>
                 <span class="text-sm text-gray-800 font-semibold">@Model.Enterprise?.Contact</span>
             </div>
         </div>
         
-        <div class="mt-6 pt-6 border-t border-gray-100">
+        <div id="notes-section" class="mt-6 pt-6 border-t border-gray-100">
             <span class="text-xs font-medium text-gray-400 block mb-1">📝 Заметки:</span>
-            <p class="text-sm text-gray-700 italic bg-gray-50 p-3 rounded-lg border border-gray-100">@Model.Enterprise?.Note</p>
+            <p class="access-item-card text-sm text-gray-700 italic bg-gray-50 p-3 rounded-lg border border-gray-100">@Model.Enterprise?.Note</p>
         </div>
     </div>
 
@@ -103,33 +114,35 @@
                                     
                                     <div class="flex flex-wrap gap-2 items-center text-xs font-mono">
                                         <span class="text-gray-500 font-sans text-sm">ОС:</span>
-                                        <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 font-bold">
+                                        <span class="host-badge-item secret-data bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 font-bold">
                                             @host.OsName
                                         </span>
-                                        <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded border border-gray-200">
+                                        <span class="host-badge-item secret-data bg-gray-100 text-gray-800 px-2 py-0.5 rounded border border-gray-200">
                                             @host.OsVer
                                         </span>
-                                        <span class="bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 text-[11px] uppercase tracking-wider font-semibold">
+                                        <span class="host-badge-item secret-data bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200 text-[11px] uppercase tracking-wider font-semibold">
                                             @host.OsType
                                         </span>
                                     </div>
 
                                     <span>•</span>
-                                    <span>Назначение: <strong class="text-gray-700">@host.Purpose</strong></span>
+                                    <span>Назначение: <strong class="secret-data text-gray-700"><span class="host-purpose-text">@host.Purpose</span></strong></span>
+                                    <span>•</span>
+                                    <span>Создан: @host.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
                                 </div>
                             </div>
-                            <div class="mt-2 sm:mt-0 text-right">
+                            <div class="host-ip-badge mt-2 sm:mt-0 text-right">
                                 
-                                <span class="text-sm font-mono font-bold text-gray-900 bg-gray-50 px-2 py-1 rounded border border-gray-100">IP: @host.Ip</span>
+                                <span class="access-item-card secret-data text-sm font-mono font-bold text-gray-900 bg-gray-50 px-2 py-1 rounded border border-gray-100">IP: @host.Ip</span>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1">Сетевые интерфейсы (ifconfig):</span>
-                            <pre class="bg-gray-900 text-green-400 p-3 rounded-lg text-xs font-mono overflow-x-auto whitespace-pre-wrap">@host.NetworkInterfaces</pre>
+                            <pre class="secret-data bg-gray-900 text-green-400 p-3 rounded-lg text-xs font-mono overflow-x-auto whitespace-pre-wrap">@host.NetworkInterfaces</pre>
                         </div>
 
-                        <div class="mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs flex flex-col space-y-3">
+                        <div class="access-item-card mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs flex flex-col space-y-3">
                             
                             
                             <span class="text-gray-400 font-semibold uppercase block mb-1">
@@ -142,8 +155,8 @@
                             {
                                 @foreach (var service in host.Services)
                                 {
-                                    <div id="service-card-@service.Id" class="border-b border-gray-200 last:border-0 pb-2 last:pb-0 flex flex-col space-y-1">
-                                        <div class="flex flex-row items-center justify-start text-gray-900 font-bold">
+                                    <div id="service-card-@service.Id service_section" class="service-row-item border-b border-gray-200 last:border-0 pb-2 last:pb-0 flex flex-col space-y-1">
+                                        <div class="secret-data flex flex-row items-center justify-start text-gray-900 font-bold">
                                             
                                             ● @service.Name
                                             <form method="post" onsubmit="submitDeleteService(event, @service.Id, '@service.Name')" class="relative bottom-[1px] inline">
@@ -154,8 +167,8 @@
                                                 </button>
                                             </form>
                                         </div>
-                                        <p class="text-gray-600 italic pl-3">@service.Description</p>
-                                        <pre class="bg-white p-2 rounded border border-gray-100 font-mono text-indigo-600 overflow-x-auto whitespace-pre-wrap mt-1 ml-3">Путь: @service.Path</pre>
+                                        <p class="secret-data text-gray-600 italic pl-3">@service.Description</p>
+                                        <pre class="service-path-card secret-data bg-white p-2 rounded border border-gray-100 font-mono text-indigo-600 overflow-x-auto whitespace-pre-wrap mt-1 ml-3">Путь: @service.Path</pre>
                                     </div>
                                 }
                             }
@@ -168,16 +181,16 @@
 
                         @if (!string.IsNullOrEmpty(host.Notes))
                         {
-                            <div class="mb-4 border-l-4 border-amber-500 bg-amber-50 p-3 rounded-r-lg text-xs">
+                            <div id="warning-note-box" class="mb-4 border-l-4 border-amber-500 bg-amber-50 p-3 rounded-r-lg text-xs">
                                 <span class="font-semibold text-amber-800 block mb-1">💡 Свободное поле:</span>
-                                <p class="text-amber-900 italic">@host.Notes</p>
+                                <p class="secret-data text-amber-900 italic">@host.Notes</p>
                             </div>
                         }
 
-                        <div class="mt-6 pt-4 border-t border-gray-100">
+                        <div id="access-control-section" class="mt-6 pt-4 border-t border-gray-100">
                             <div class="flex flex-row justify-between items-center text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-3">
                                 <span>Доступы к хосту:</span>
-                                <button type="button" onclick="openCreateAccessModal(@host.Id)" class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold flex items-center focus:outline-none">
+                                <button type="button" onclick="openCreateAccessModal(@host.Id)" class="cursor-pointer text-indigo-600 hover:text-indigo-800 text-xs font-semibold flex items-center focus:outline-none">
                                     + Добавить доступы
                                 </button>
                             </div>
@@ -186,7 +199,7 @@
                                 {
                                     @foreach (var acc in host.Accesses)
                                     {
-                                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col space-y-2 text-xs">
+                                        <div class="access-item-card bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col space-y-2 text-xs">
                                             <div class="flex flex-wrap justify-between items-center">
                                                 <div class="flex items-center space-x-3">
 
@@ -198,8 +211,8 @@
                                                         </button>
                                                     </form>
 
-                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-200 text-gray-700">@acc.AccessType?.Name</span>
-                                                    <span class="font-mono text-gray-600">@acc.Address:@acc.Port</span>
+                                                    <span class="service-type-badge secret-data px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-200 text-gray-700">@acc.AccessType?.Name</span>
+                                                    <span class="secret-data font-mono text-gray-600">@acc.Address:@acc.Port</span>
                                                 </div>
 
 
@@ -210,7 +223,7 @@
                                                     <div>
                                                         <span class="text-gray-400">Логин:</span> 
                                                         <span class="font-medium text-gray-800">
-                                                            <span onclick="copyToClipboard(this, '@acc.Login')" class="text-gray-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors" title="Нажмите, чтобы скопировать">
+                                                            <span onclick="copyToClipboard(this, '@acc.Login')" class="secret-data text-gray-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors" title="Нажмите, чтобы скопировать">
                                                                 @acc.Login
                                                             </span>
                                                         </span>
@@ -218,7 +231,7 @@
                                                     <div>
                                                         <span class="text-gray-400">Пароль:</span> 
                                                         <span id="pass-text-@acc.Id" onclick="copyToClipboard(this, '@EnterpriseSchema.Data.CryptoHelper.Decrypt(acc.Pass)')" 
-                                                            class="text-gray-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors font-sans" title="Нажмите, чтобы скопировать">
+                                                            class="secret-data text-gray-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors font-sans" title="Нажмите, чтобы скопировать">
                                                             ••••••••
                                                         </span>
                                                     </div>
@@ -234,7 +247,7 @@
                                             {
                                                 <div class="mt-2 pt-2 border-t border-gray-200/60">
                                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block mb-1">Инструкция:</span>
-                                                    <pre class="bg-white p-2 rounded border border-gray-200 text-[11px] font-mono text-gray-600 overflow-x-auto whitespace-pre-wrap">@acc.Note</pre>
+                                                    <pre class="service-desc-box secret-data bg-white p-2 rounded border border-gray-200 text-[11px] font-mono text-gray-600 overflow-x-auto whitespace-pre-wrap">@acc.Note</pre>
                                                 </div>
                                             }
                                         </div>
@@ -252,7 +265,7 @@
             }
             else
             {
-                <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                <div class="access-item-card text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                     <p class="text-sm text-gray-500 italic">Здесь не зарегистрировано ни одного хоста.</p>
                 </div>
             }
@@ -379,8 +392,29 @@
 
             <div>
                 <label class="block font-semibold text-gray-500 uppercase mb-1">Пароль</label>
-                <input type="text" id="accessPass" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="••••••••" />
+                <div class="relative w-full">
+                    <input placeholder="password" type="text" id="accessPass" required class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-3 pr-10 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all duration-300" />
+        
+                    <button type="button" onclick="generateSecurePassword()" title="Сгенерировать" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors duration-300 p-0.5 rounded cursor-pointer focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="w-4 h-4">
+                            <g id="SVGRepo_iconCarrier">
+                                <g>
+                                    <path d="M454.321,219.727l-38.766-51.947l20.815-61.385c2.046-6.032,0.489-12.704-4.015-17.208 c-4.504-4.504-11.175-6.061-17.208-4.015l-61.384,20.815l-51.951-38.766c-5.103-3.809-11.929-4.392-17.605-1.499 c-5.676,2.893-9.217,8.755-9.136,15.125l0.829,64.815l-52.923,37.426c-5.201,3.678-7.863,9.989-6.867,16.282 c0.996,6.291,5.479,11.471,11.561,13.363l43.844,13.63L14.443,483.432c-6.535,6.534-6.535,17.131,0,23.666s17.131,6.535,23.666,0 l257.073-257.072l13.629,43.843c2.172,6.986,8.638,11.768,15.984,11.768c5.375,0,10.494-2.595,13.66-7.072l37.426-52.923 l64.815,0.828c6.322,0.051,12.233-3.462,15.125-9.136S458.131,224.833,454.321,219.727z"></path>
+                
+                                    <polygon points="173.373,67.274 160.014,42.848 146.656,67.274 122.23,80.632 146.656,93.992 160.014,118.417 173.373,93.992 197.799,80.632 "></polygon>
+                                    <polygon points="362.946,384.489 352.14,364.731 341.335,384.489 321.577,395.294 341.335,406.1 352.14,425.856 362.946,406.1 382.703,395.294 "></polygon>
+                                    <polygon points="378.142,19.757 367.337,0 356.531,19.757 336.774,30.563 356.531,41.369 367.337,61.126 378.142,41.369 397.9,30.563 "></polygon>
+                                    <polygon points="490.635,142.513 484.167,130.689 477.701,142.513 465.876,148.979 477.701,155.446 484.167,167.27 490.635,155.446 502.458,148.979 "></polygon>
+                                    <polygon points="492.626,294.117 465.876,301.951 439.128,294.117 446.962,320.865 439.128,347.615 465.876,339.781 492.626,347.615 484.791,320.865 "></polygon>
+                                </g>
+                            </g>
+                        </svg>
+                    </button>
+
+
+                </div>
             </div>
+
 
             <div>
                 <label class="block font-semibold text-gray-500 uppercase mb-1">Примечание / Инструкция (Необязательно)</label>
@@ -527,6 +561,17 @@
 
 
 
+<style>
+    .spy-blur {
+        filter: blur(5.5px);
+        transition: filter 0.3s ease-in-out;
+    }
+
+    .spy-blur:hover {
+        filter: blur(0);
+    }
+
+</style>
 
 
 

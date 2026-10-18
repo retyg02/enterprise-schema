@@ -1,0 +1,270 @@
+body {
+    transition: background-color 0.3s ease, color 0.3s ease !important;
+}
+
+    
+    body.dark-mode {
+        background-color: #111827 !important;
+        background-image: url('/bg.webp') !important;
+        background-blend-mode: overlay !important;
+        color: #f3f4f6 !important;
+    }
+
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+            border-color: #374151 !important;
+        }
+
+        body.dark-mode div.bg-white,
+        body.dark-mode footer.bg-white,
+        body.dark-mode button.bg-white,
+        body.dark-mode button[onclick*="closeModal"] {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+            color: #f9fafb !important;
+        }
+
+        body.dark-mode header {
+            background-color: rgba(33,42,57, 50%) !important;
+            border-color: rgba(55,65,81, 50) !important;
+            color: #f9fafb !important;
+        }
+
+    body header {
+        background-color: #f9fafb94;
+        border-color: rgba(229,231,235, 50) !important;
+    }
+
+            body.dark-mode button.bg-white:hover,
+            body.dark-mode button[onclick*="closeModal"]:hover {
+                background-color: #374151 !important;
+                color: #ffffff !important;
+            }
+
+        body.dark-mode div[id^="enterprise-card-"]:hover {
+            background-color: #253041 !important;
+            border-color: #4b5563 !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        body.dark-mode div.border-gray-100,
+        body.dark-mode div.border-gray-200,
+        body.dark-mode div.border-t,
+        body.dark-mode div.border-b,
+        body.dark-mode div.border-r,
+        body.dark-mode h3.border-b,
+        body.dark-mode h4.border-b {
+            border-color: #374151 !important;
+        }
+
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
+        body.dark-mode p, body.dark-mode span, body.dark-mode label,
+        body.dark-mode div.text-gray-400, body.dark-mode div.text-gray-900 {
+            color: #f9fafb !important;
+        }
+
+        body.dark-mode header span.text-indigo-600,
+        body.dark-mode header a span.text-indigo-600,
+        body.dark-mode .text-indigo-600 {
+            color: #6366f1 !important;
+        }
+
+        body.dark-mode span.bg-indigo-50.text-indigo-700.border-indigo-100 {
+            background-color: #0f172a !important;
+            color: #818cf8 !important;
+            border-color: #374151 !important;
+        }
+
+        body.dark-mode button.bg-gray-100.border-gray-300.text-gray-700 {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+            color: #f9fafb !important;
+        }
+
+            body.dark-mode button.bg-gray-100.border-gray-300.text-gray-700:hover {
+                background-color: #4b5563 !important;
+            }
+
+        body.dark-mode header span:not(.text-indigo-600),
+        body.dark-mode header a:not(:has(span.text-indigo-600)),
+        body.dark-mode footer div {
+            color: #e5e7eb !important;
+        }
+
+        body.dark-mode header button:hover,
+        body.dark-mode header form button:hover,
+        body.dark-mode header a:hover {
+            background-color: #374151 !important;
+            color: #ffffff !important;
+        }
+
+        body.dark-mode #recent-enterprises-list a {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+            color: #9ca3af !important;
+        }
+
+            body.dark-mode #recent-enterprises-list a:hover {
+                background-color: #374151 !important;
+                color: #818cf8 !important;
+                border-color: #4b5563 !important;
+            }
+
+        body.dark-mode div[id^="enterprise-card-"] a:hover,
+        body.dark-mode div[id^="enterprise-card-"] button:not(.bg-indigo-600):hover {
+            background-color: #374151 !important;
+            color: #818cf8 !important;
+        }
+
+        body.dark-mode div.fixed.inset-0.bg-gray-900,
+        body.dark-mode div[id^="createModal"].fixed,
+        body.dark-mode div[id^="updateModal"].fixed,
+        body.dark-mode div[id^="cityModal"].fixed {
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(4px) !important;
+        }
+
+        body.dark-mode main div div #ajaxUpdateForm > div.pt-2.flex.space-x-3 > button.w-1\/2.bg-gray-100.hover\:bg-gray-200.text-gray-700.font-medium.py-2.rounded-lg.text-sm.transition-colors,
+        body.dark-mode main div div #ajaxEnterpriseForm > div.pt-2.flex.space-x-3 > button.w-1\/2.bg-gray-100.hover\:bg-gray-200.text-gray-700.font-medium.py-2.rounded-lg.text-sm.transition-colors,
+        body.dark-mode main div div #ajaxCityForm > div > button.w-1\/2.bg-gray-50.hover\:bg-gray-100.text-gray-600.text-xs.py-2.rounded-lg.transition-colors {
+            background-color: #242F3F !important;
+        }
+
+            body.dark-mode main div div #ajaxUpdateForm > div.pt-2.flex.space-x-3 > button.w-1\/2.bg-gray-100.hover\:bg-gray-200.text-gray-700.font-medium.py-2.rounded-lg.text-sm.transition-colors:hover,
+            body.dark-mode main div div #ajaxEnterpriseForm > div.pt-2.flex.space-x-3 > button.w-1\/2.bg-gray-100.hover\:bg-gray-200.text-gray-700.font-medium.py-2.rounded-lg.text-sm.transition-colors:hover,
+            body.dark-mode main div div #ajaxCityForm > div > button.w-1\/2.bg-gray-50.hover\:bg-gray-100.text-gray-600.text-xs.py-2.rounded-lg.transition-colors:hover {
+                background-color: #283446 !important;
+            }
+
+        body.dark-mode main div div form div #LoginInput, body.dark-mode main div div form div #PasswordInput {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+            border-color: #374151 !important;
+        }
+
+
+
+        /* ######################################################################################################### */
+        /* ######################################################################################################### */
+        /* ######################################################################################################### */
+
+
+       
+        body.dark-mode #contact-section,
+        body.dark-mode #notes-section {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+            color: #f9fafb !important;
+        }
+
+        body.dark-mode .host-purpose-text {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .host-ip-badge {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .service-path-card {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+            color: #f9fafb !important;
+        }
+
+        body.dark-mode #access-control-section {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+        }
+
+        body.dark-mode .access-item-card {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+            color: #f9fafb !important;
+        }
+
+            body.dark-mode #contact-section span,
+            body.dark-mode #notes-section span,
+            body.dark-mode .service-path-card span,
+            body.dark-mode .access-item-card span {
+                color: #f9fafb !important;
+            }
+
+
+
+body.dark-mode main div div div div div #service_section {
+    border-color: #1F2937 !important;
+}
+
+
+    body.dark-mode main div div div h2 #hostsCounter {
+        background-color: #1F2937 !important;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+    body.dark-mode .host-badge-item {
+        background-color: #374151 !important;
+        border-color: #4b5563 !important;
+        color: #f3f4f6 !important;
+    }
+
+    body.dark-mode .service-row-item {
+        border-bottom: 1px solid #374151 !important;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+    }
+        body.dark-mode .service-row-item:last-child {
+            border-bottom: none !important;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+    body.dark-mode .service-desc-box {
+        background-color: #374151 !important;
+        border-color: #4b5563 !important;
+        color: #f9fafb !important;
+    }
+
+    body.dark-mode .service-type-badge {
+        background-color: #374151 !important;
+        border-color: #4b5563 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode #warning-note-box {
+        background-color: #2d2211 !important;
+        border-color: #78350f !important;
+        color: #fde68a !important;
+    }
+        body.dark-mode #warning-note-box span,
+        body.dark-mode #warning-note-box div {
+            color: #fde68a !important;
+        }
+
+
+    body.dark-mode .added-service-name {
+        color: #1f2937 !important;
+    }
+
+    body.dark-mode .added-service-desc {
+        color: #4b5563 !important;
+    }

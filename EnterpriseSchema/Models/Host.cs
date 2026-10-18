@@ -37,6 +37,8 @@ public class Host
 
     [StringLength(500, ErrorMessage = "Заметка не может превышать 500 символов")]
     public string? Notes { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
 
 
     public int EnterpriseId { get; set; }

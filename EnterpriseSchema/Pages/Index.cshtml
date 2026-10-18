@@ -22,6 +22,17 @@
         </button>
     </div>
 
+    <div id="recent-enterprises-container" class="hidden w-full max-w-7xl mx-auto mb-4 text-xs text-gray-500 flex items-center space-x-2">
+        <span class="font-medium text-gray-400 flex-shrink-0">🕒 Недавние:</span>
+        <div id="recent-enterprises-list" class="flex flex-nowrap items-center gap-2 overflow-x-auto w-full py-1" style="-ms-overflow-style: none; scrollbar-width: none;">
+            @* недавние предприятия 3 максимум *@
+        </div>
+    </div>
+
+
+
+
+
     <div class="flex flex-wrap -mx-4">
 
         @if (Model.Enterprises != null && Model.Enterprises.Any())
@@ -77,7 +88,7 @@
                                 </button>
                             </form>
                             </div>
-                            <a asp-page="/EnterpriseDetails" asp-route-id="@enterprise.Id" class="inline-flex items-center justify-center px-4 py-2 border 
+                            <a data-enterprise-id="@enterprise.Id" data-enterprise-name="@enterprise.Name" asp-page="/EnterpriseDetails" asp-route-id="@enterprise.Id" class="inline-flex items-center justify-center px-4 py-2 border
                                 border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
                                 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
                                 Открыть →

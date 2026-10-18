@@ -30,7 +30,7 @@ function closeModal(id, isNotModal = false) {
 
     function checkOverlayClose(event, id) {
         if (event.target.id === id) {
-            closeModal(id);
+            closeModal(id, true);
         }
     }
 
@@ -233,4 +233,68 @@ async function submitDelete(event, id, name) {
         if (card) card.classList.remove('blur-[2px]', 'opacity-60', 'pointer-events-none');
         console.error('Ошибка при удалении:', error);
     }
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    renderRecentEnterprises();
+    setupEnterpriseClickHandlers();
+});
+
+function renderRecentEnterprises() {
+    const listContainer = document.getElementById("recent-enterprises-container");
+    const listTarget = document.getElementById("recent-enterprises-list");
+    if (!listTarget) return;
+
+    let recent = JSON.parse(localStorage.getItem("recent_enterprises")) || [];
+
+    if (recent.length === 0) {
+        listContainer.classList.add("hidden");
+        return;
+    }
+
+    listContainer.classList.remove("hidden");
+    listTarget.innerHTML = ""; 
+
+    recent.forEach(ent => {
+        const tag = document.createElement("a");
+        tag.href = `/EnterpriseDetails?id=${ent.id}`;
+        tag.className = "bg-gray-100 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 px-2.5 py-1 rounded-md font-medium transition-colors border border-gray-200 hover:border-indigo-200 whitespace-nowrap";
+        tag.textContent = ent.name;
+        
+        tag.addEventListener("click", function() {
+            saveToRecent(ent.id, ent.name);
+        });
+
+        listTarget.appendChild(tag);
+    });
+}
+
+function setupEnterpriseClickHandlers() {
+    const openButtons = document.querySelectorAll("[data-enterprise-id]");
+    openButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const id = this.getAttribute("data-enterprise-id");
+            const name = this.getAttribute("data-enterprise-name");
+            if (id && name) {
+                saveToRecent(id, name);
+            }
+        });
+    });
+}
+
+function saveToRecent(id, name) {
+    let recent = JSON.parse(localStorage.getItem("recent_enterprises")) || [];
+
+    recent = recent.filter(item => item.id !== id);
+
+    recent.unshift({ id: id, name: name });
+
+    if (recent.length > 3) {
+        recent.pop();
+    }
+
+    localStorage.setItem("recent_enterprises", JSON.stringify(recent));
 }

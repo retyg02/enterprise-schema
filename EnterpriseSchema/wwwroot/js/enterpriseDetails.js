@@ -454,8 +454,8 @@ function renderTempServices() {
         container.innerHTML += `
             <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-2 text-[11px] animate-fade-in">
                 <div class="font-mono">
-                    <span class="font-bold text-gray-900">${srv.name}</span> 
-                    <span class="text-gray-400">(${srv.description || 'нет описания'})</span>
+                    <span class="font-bold text-gray-900 added-service-name">${srv.name}</span> 
+                    <span class="text-gray-400 added-service-desc">(${srv.description || 'нет описания'})</span>
                     <div class="text-gray-500 text-[10px] mt-0.5 font-semibold">📍 ${srv.path}</div>
                 </div>
                 <button type="button" onclick="removeTempService(${srv.tempId})" class="text-gray-400 hover:text-red-600 p-1 focus:outline-none text-xs font-bold" title="Удалить службу">&times;</button>
@@ -569,5 +569,71 @@ async function submitDeleteService(event, id, name) {
     } catch (error) {
         if (card) card.classList.remove('blur-[2px]', 'opacity-60', 'pointer-events-none');
         console.error('Ошибка при удалении службы:', error);
+    }
+}
+
+
+
+
+
+function generateSecurePassword() {
+    const input = document.getElementById('accessPass');
+    if (!input) return;
+
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~-=";
+    let password = "";
+    
+    for (let i = 0; i < 16; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    input.value = "";
+    let currentIdx = 0;
+
+    input.classList.remove('border-gray-300', 'focus:ring-indigo-500');
+    input.classList.add('border-emerald-500', 'ring-2', 'ring-emerald-500/30', 'bg-emerald-50/30');
+    
+    const typingInterval = setInterval(() => {
+        if (currentIdx < password.length) {
+            input.value += password.charAt(currentIdx);
+            currentIdx++;
+        } else {
+            clearInterval(typingInterval);
+            
+            input.classList.remove('border-emerald-500', 'ring-2', 'ring-emerald-500/30', 'bg-emerald-50/30');
+            input.classList.add('border-gray-300', 'focus:ring-indigo-500');
+            
+        }
+    }, 25);
+}
+
+
+
+
+
+function toggleParanoiaMode() {
+    const secretFields = document.querySelectorAll('.secret-data');
+    const toggleBtn = document.getElementById('paranoia-toggle-btn');
+    
+    if (secretFields.length === 0 || !toggleBtn) return;
+
+    const isCurrentlyBlurred = secretFields[0].classList.contains('spy-blur');
+
+    secretFields.forEach(field => {
+        if (isCurrentlyBlurred) {
+            field.classList.remove('spy-blur');
+        } else {
+            field.classList.add('spy-blur');
+        }
+    });
+
+    if (!isCurrentlyBlurred) {
+        toggleBtn.classList.remove('text-gray-400');
+        toggleBtn.classList.add('text-emerald-500');
+        toggleBtn.firstElementChild.classList.add('rotate-12');
+    } else {
+        toggleBtn.classList.remove('text-emerald-500');
+        toggleBtn.classList.add('text-gray-400');
+        toggleBtn.firstElementChild.classList.remove('rotate-12');
     }
 }

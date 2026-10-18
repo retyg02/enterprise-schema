@@ -21,7 +21,9 @@ public class Enterprise
     
     [StringLength(500, ErrorMessage = "Примечание не может быть длиннее 500 символов")]
     public string? Note { get; set; }
-    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
     public virtual ICollection<Host> Hosts { get; set; } = new List<Host>();
     //public virtual ICollection<Access> Accesses { get; set; } = new List<Access>();
 }

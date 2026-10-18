@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EnterpriseSchema.Migrations
 {
     /// <inheritdoc />
-    public partial class finalmigration : Migration
+    public partial class timestamps : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -77,7 +78,8 @@ namespace EnterpriseSchema.Migrations
                     Contact = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Note = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -143,6 +145,7 @@ namespace EnterpriseSchema.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Notes = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EnterpriseId = table.Column<int>(type: "int", nullable: false),
                     ServiceDictId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -206,24 +209,24 @@ namespace EnterpriseSchema.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Pass" },
-                values: new object[] { 1, "login", "User", "AQAAAAIAAYagAAAAEI61s+YzMYlOYq2SVjb2c3olzJeSALVIxv8m51SOlCBH96rdPMUBKKcjunL76Kmg8g==" });
+                values: new object[] { 1, "login", "User", "AQAAAAIAAYagAAAAEGXsmd5SD3q1ZQj/ArVFIvbDZ6CgDZ0DL9N7/1SfCB7LNwYRyvTpR3jnFcEqJIk1/g==" });
 
             migrationBuilder.InsertData(
                 table: "Enterprises",
-                columns: new[] { "Id", "CityId", "Contact", "Name", "Note" },
+                columns: new[] { "Id", "CityId", "Contact", "CreatedAt", "Name", "Note" },
                 values: new object[,]
                 {
-                    { 1, 1, "Иванов Иван Иванович", "Завод1", "Заметка1" },
-                    { 2, 2, "Петров Петр Петрович", "Завод2", "Заметка2" }
+                    { 1, 1, "Иванов Иван Иванович", new DateTime(2026, 7, 18, 14, 44, 34, 711, DateTimeKind.Utc).AddTicks(6640), "Завод1", "Заметка1" },
+                    { 2, 2, "Петров Петр Петрович", new DateTime(2026, 10, 17, 14, 44, 34, 711, DateTimeKind.Utc).AddTicks(7076), "Завод2", "Заметка2" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Hosts",
-                columns: new[] { "Id", "EnterpriseId", "Ip", "Name", "NetworkInterfaces", "Notes", "OsName", "OsType", "OsVer", "Purpose", "ServiceDictId" },
+                columns: new[] { "Id", "CreatedAt", "EnterpriseId", "Ip", "Name", "NetworkInterfaces", "Notes", "OsName", "OsType", "OsVer", "Purpose", "ServiceDictId" },
                 values: new object[,]
                 {
-                    { 1, 1, "192.168.0.1", "Сервер1", "IfConfig output", "Свободное поле", "Ubuntu", "04", "22", "СЦ", null },
-                    { 2, 2, "192.168.0.2", "Сервер2", "ipconfig output", "Свободное поле", "Debian", "Bullseye", "12", "ВС", null }
+                    { 1, new DateTime(2026, 8, 18, 14, 44, 34, 712, DateTimeKind.Utc).AddTicks(719), 1, "192.168.0.1", "Сервер1", "IfConfig output", "Свободное поле", "Ubuntu", "04", "22", "СЦ", null },
+                    { 2, new DateTime(2026, 10, 13, 14, 44, 34, 712, DateTimeKind.Utc).AddTicks(1016), 2, "192.168.0.2", "Сервер2", "ipconfig output", "Свободное поле", "Debian", "Bullseye", "12", "ВС", null }
                 });
 
             migrationBuilder.InsertData(

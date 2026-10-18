@@ -9,17 +9,52 @@
     <link rel="stylesheet" href="~/EnterpriseSchema.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
 </head>
+
 <body class="bg-gray-50 bg-[url('/bg.webp')] bg-repeat bg-[length:200px_200px] bg-opacity-[0.03] text-gray-950 min-h-screen flex flex-col">
-    
-    <header class="bg-white border-b border-gray-200">
+    <script>
+            (function () {
+                const savedTheme = localStorage.getItem("theme_mode");
+                const currentHour = new Date().getHours();
+
+                if (savedTheme === "dark" || (!savedTheme && (currentHour >= 18 || currentHour < 6))) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            })();
+    </script>
+    <header style="border-bottom: 1px solid;" class="sticky top-0 z-50 backdrop-blur">
         <div class="container mx-auto max-w-7xl px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <span class="text-xl font-bold tracking-tight text-indigo-600">Stek Labs</span>
+                <span class="text-xl font-bold tracking-tight text-indigo-600 sm:block hidden">Stek Labs</span>
+                <span class="text-2xl font-bold tracking-tight text-indigo-600 block sm:hidden">S L</span>
                 <span class="text-gray-300 hidden md:inline-block">|</span>
                 <span class="text-sm font-medium text-gray-500 hidden md:inline-block">Реестр доступов</span>
             </div>
 
             <div class="flex items-center space-x-4 ml-auto">
+
+                <button type="button" id="theme-toggle-btn" onclick="toggleDarkMode()" title="Переключить режим" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-300 ease-in-out focus:outline-none">
+    
+                    <div id="theme-toggle-ball" class="pointer-events-none flex items-center justify-center h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-300 ease-in-out translate-x-0 text-[10px] leading-none select-none">
+                        ☀️
+                    </div>
+
+                    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("theme_mode");
+            const currentHour = new Date().getHours();
+            if (savedTheme === "dark" || (!savedTheme && (currentHour >= 18 || currentHour < 6))) {
+                document.getElementById("theme-toggle-btn").classList.add("bg-indigo-500");
+                const ball = document.getElementById("theme-toggle-ball");
+                ball.classList.add("translate-x-5");
+                ball.textContent = "🌙";
+            }
+        })();
+                    </script>
+                </button>
+
+
                @if (User.Identity != null && User.Identity.IsAuthenticated)
 { 
                 <form method="get" asp-page="/Index" class="relative block">
@@ -78,4 +113,5 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
