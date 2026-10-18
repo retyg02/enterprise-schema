@@ -27,7 +27,7 @@
 
                 </div>
                 <p class="text-sm text-gray-500 mt-2">📍 <span class="text-gray-800 font-medium">@Model.Enterprise?.City?.Name</span></p>
-                <p class="text-sm text-gray-500 mt-2">📅 <span class="text-gray-800 font-medium">@Model.Enterprise?.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span></p>
+                <p class="text-sm text-gray-500 mt-2">📅 <span class="text-gray-800 font-medium">@Model.Enterprise?.CreatedAt.ToString("dd.MM.yyyy")</span></p>
             </div>
             <div id="contact-section" class="mt-4 md:mt-0 bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-md">
                 <span class="text-xs font-medium text-gray-400 block mb-1">👤 Контакт:</span>
@@ -128,7 +128,7 @@
                                     <span>•</span>
                                     <span>Назначение: <strong class="secret-data text-gray-700"><span class="host-purpose-text">@host.Purpose</span></strong></span>
                                     <span>•</span>
-                                    <span>Создан: @host.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                                    <span>Создан: <span class="secret-data">@host.CreatedAt.ToString("dd.MM.yyyy")</span></span>
                                 </div>
                             </div>
                             <div class="host-ip-badge mt-2 sm:mt-0 text-right">
