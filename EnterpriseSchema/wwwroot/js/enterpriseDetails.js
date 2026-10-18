@@ -42,6 +42,8 @@ function clearHostSearch() {
 
 
 
+
+
 function openModal(id) {
     const modal = document.getElementById(id);
     if (!modal) return;
