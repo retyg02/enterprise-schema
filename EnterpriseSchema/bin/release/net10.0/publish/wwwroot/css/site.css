@@ -307,3 +307,15 @@ body.dark-mode .custom-select-option {
         background-color: #374151 !important;
         color: #ffffff !important;
     }
+
+
+
+
+body p,
+body span,
+body div,
+body pre,
+.enterprise-card-item p {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
