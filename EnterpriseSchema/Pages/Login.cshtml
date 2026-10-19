@@ -1,0 +1,41 @@
+﻿@page
+@model EnterpriseSchema.Pages.LoginModel
+@{
+    ViewData["Title"] = "Авторизация в системе";
+}
+
+<div class="fixed inset-0 bg-gray-900/10 backdrop-blur-md z-40 flex items-center justify-center p-4">
+    
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-sm w-full z-50 animate-fade-in relative">
+        
+        <div class="text-center mb-6">
+            <h2 class="text-lg font-black tracking-tight text-gray-900 uppercase">Аутентификация</h2>
+            <p class="text-[11px] text-gray-400 mt-1 font-semibold">Реестр доступов и развертываний</p>
+        </div>
+
+        <form method="post" class="space-y-4 text-xs">
+            @if (!ModelState.IsValid)
+            {
+                <div class="text-red-600 font-semibold bg-red-50 p-3 rounded-lg border border-red-100">
+                    <div asp-validation-summary="All"></div>
+                </div>
+            }
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase tracking-wider mb-1">Логин</label>
+                <input type="text" asp-for="LoginInput" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Введите логин..." />
+            </div>
+
+            <div>
+                <label class="block font-semibold text-gray-500 uppercase tracking-wider mb-1">Пароль</label>
+                <input type="password" asp-for="PasswordInput" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••" />
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Войти
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
