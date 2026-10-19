@@ -350,20 +350,45 @@ async function submitAccessTypeForm(event) {
         });
 
         if (response.ok) {
-            const data = await response.json();
-            const selectList = document.getElementById('accessAccessTypeId');
-            
-            if (selectList) {
-                const newOption = document.createElement('option');
-                newOption.value = data.id;
-                newOption.text = data.name;
-                newOption.selected = true;
-                selectList.add(newOption);
-            }
+    const data = await response.json();
 
-            input.value = '';
-            closeModal('accessTypeModal');
-        } else {
+    const container = document.querySelector('.custom-select-container');
+    if (container) {
+        const optionsBlock = container.querySelector('.custom-select-options');
+        const hiddenInput = container.querySelector('.custom-select-value');
+        const triggerText = container.querySelector('.custom-select-text');
+
+        if (optionsBlock) {
+            const newOption = document.createElement('div');
+            newOption.setAttribute('data-value', data.id);
+            newOption.className = "custom-select-option px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-white cursor-pointer select-none transition-colors";
+            newOption.textContent = data.name;
+
+            newOption.addEventListener('click', function () {
+                if (hiddenInput && triggerText) {
+                    hiddenInput.value = data.id;
+                    triggerText.textContent = data.name;
+                    triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
+                }
+                optionsBlock.classList.add('hidden');
+                const arrow = container.querySelector('.custom-select-arrow');
+                if (arrow) arrow.classList.remove('rotate-180');
+            });
+
+            optionsBlock.appendChild(newOption);
+
+            if (hiddenInput && triggerText) {
+                hiddenInput.value = data.id;
+                triggerText.textContent = data.name;
+                triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
+            }
+        }
+    }
+
+    input.value = '';
+    closeModal('accessTypeModal');
+}
+ else {
             alert('Ошибка при добавлении типа доступа');
         }
     } catch (error) {
@@ -638,4 +663,70 @@ function toggleParanoiaMode() {
         toggleBtn.classList.add('text-gray-400');
         toggleBtn.firstElementChild.classList.remove('rotate-12');
     }
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    initCustomSelects();
+});
+
+
+
+
+function initCustomSelects() {
+    const containers = document.querySelectorAll('.custom-select-container');
+
+    containers.forEach(container => {
+        const trigger = container.querySelector('.custom-select-trigger');
+        const optionsBlock = container.querySelector('.custom-select-options');
+        const arrow = container.querySelector('.custom-select-arrow');
+        const hiddenInput = container.querySelector('.custom-select-value');
+        const triggerText = container.querySelector('.custom-select-text');
+        const options = container.querySelectorAll('.custom-select-option');
+
+        if (!trigger || !optionsBlock) return;
+
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            
+            document.querySelectorAll('.custom-select-options').forEach(block => {
+                if (block !== optionsBlock) block.classList.add('hidden');
+            });
+            document.querySelectorAll('.custom-select-arrow').forEach(arr => {
+                if (arr !== arrow) arr.classList.remove('rotate-180');
+            });
+
+            const isHidden = optionsBlock.classList.contains('hidden');
+            if (isHidden) {
+                optionsBlock.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                optionsBlock.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        });
+
+        options.forEach(option => {
+            option.addEventListener('click', function () {
+                const val = this.getAttribute('data-value');
+                const text = this.textContent.trim();
+
+                if (hiddenInput && triggerText) {
+                    hiddenInput.value = val;
+                    triggerText.textContent = text;
+                    triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
+                }
+
+                optionsBlock.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            });
+        });
+    });
+
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.custom-select-options').forEach(block => block.classList.add('hidden'));
+        document.querySelectorAll('.custom-select-arrow').forEach(arr => arr.classList.remove('rotate-180'));
+    });
 }

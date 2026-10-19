@@ -59,7 +59,7 @@
 { 
                 <form method="get" asp-page="/Index" class="relative block">
                     
-                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск предприятия, IP, хоста..." class="w-[150px] md:w-auto w-64 bg-gray-50 border border-gray-300 rounded-lg pl-9 pr-8 py-1.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder-gray-400" />
+                    <input id="search-input" type="text" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск предприятия, IP, хоста..." class="w-[150px] md:w-auto w-64 bg-gray-50 border border-gray-300 rounded-lg pl-9 pr-8 py-1.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder-gray-400" />
     
                     
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">

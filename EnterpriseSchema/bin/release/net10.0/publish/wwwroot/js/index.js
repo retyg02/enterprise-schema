@@ -46,6 +46,30 @@ function closeModal(id, isNotModal = false) {
     document.getElementById('updateContact').value = contact;
     document.getElementById('updateNote').value = note || '';
 
+
+
+
+    const hiddenInput = document.getElementById('updateCityId');
+    if (hiddenInput) {
+        const container = hiddenInput.closest('.custom-select-container');
+        const triggerText = container ? container.querySelector('.custom-select-text') : null;
+        
+        if (triggerText) {
+
+            const currentOption = container.querySelector(`.custom-select-option[data-value="${cityId}"]`);
+            
+            if (currentOption) {
+                
+                triggerText.textContent = currentOption.textContent.trim();
+                triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
+            } else {
+                
+                triggerText.textContent = '-- Выберите город --';
+                triggerText.classList.add('text-gray-400', 'dark:text-gray-400');
+            }
+        }
+    }
+
     openModal('updateModal');
 }
 
@@ -71,22 +95,44 @@ async function submitCityForm(event) {
         });
 
         if (response.ok) {
-            const data = await response.json();
+    const data = await response.json();
 
-            const selectList = document.getElementById('NewEnterprise_CityId') || document.querySelector('select[name="NewEnterprise.CityId"]');
-            
-            if (selectList) {
-                const newOption = document.createElement('option');
-                newOption.value = data.id;
-                newOption.text = data.name;
-                newOption.selected = true;
+    const container = document.querySelector('.custom-select-container');
+    if (container) {
+        const optionsBlock = container.querySelector('.custom-select-options');
+        const hiddenInput = container.querySelector('.custom-select-value');
+        const triggerText = container.querySelector('.custom-select-text');
 
-                selectList.add(newOption);
+        if (optionsBlock) {
+            const newOption = document.createElement('div');
+            newOption.setAttribute('data-value', data.id);
+            newOption.className = "custom-select-option px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-white cursor-pointer select-none transition-colors";
+            newOption.textContent = data.name;
+
+            newOption.addEventListener('click', function () {
+                if (hiddenInput && triggerText) {
+                    hiddenInput.value = data.id;
+                    triggerText.textContent = data.name;
+                    triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
+                }
+                optionsBlock.classList.add('hidden');
+                const arrow = container.querySelector('.custom-select-arrow');
+                if (arrow) arrow.classList.remove('rotate-180');
+            });
+
+            optionsBlock.appendChild(newOption);
+
+            if (hiddenInput && triggerText) {
+                hiddenInput.value = data.id;
+                triggerText.textContent = data.name;
+                triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
             }
+        }
+    }
 
-            input.value = '';
-            closeModal('cityModal');
-        } else {
+    input.value = '';
+    closeModal('cityModal');
+} else {
             alert('Ошибка при добавлении города');
         }
     } catch (error) {
@@ -241,6 +287,59 @@ async function submitDelete(event, id, name) {
 document.addEventListener("DOMContentLoaded", function () {
     renderRecentEnterprises();
     setupEnterpriseClickHandlers();
+    initCustomSelects();
+
+
+    const searchInput = document.getElementById('search-input');
+    const noResultsMessage = document.getElementById('no-results-message');
+    const counterBadge = document.getElementById('counter-badge');
+    
+    if (searchInput && noResultsMessage) {
+        const totalEnterprises = counterBadge ? parseInt(counterBadge.textContent) : 0;
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.enterprise-card-item');
+            let visibleCardsCount = 0;
+
+            cards.forEach(card => {
+                const nameText = card.querySelector('.enterprise-name-text');
+                const contactText = card.querySelector('.enterprise-contact-text');
+                const noteText = card.querySelector('.enterprise-note-text');
+                const cityText = card.querySelector('.enterprise-city-text');
+
+                const ipTextContainer = card.querySelector('.enterprise-hosts-ips');
+                const ips = ipTextContainer ? ipTextContainer.textContent.toLowerCase() : "";
+
+                if (nameText) {
+                    const name = nameText.textContent.toLowerCase();
+                    const contact = contactText.textContent.toLowerCase();
+                    const note = noteText.textContent.toLowerCase();
+                    const city = cityText.textContent.toLowerCase();
+                    
+                    if (name.includes(query) || contact.includes(query) || note.includes(query) || city.includes(query) || ips.includes(query)) {
+                        card.style.display = "";
+                        card.classList.remove('opacity-0');
+                        visibleCardsCount++;
+                    } else {
+                        card.style.display = "none";
+                        card.classList.add('opacity-0');
+                    }
+                }
+            });
+
+            if (counterBadge) {
+                counterBadge.textContent = query.length === 0 ? totalEnterprises : visibleCardsCount;
+            }
+
+            if (visibleCardsCount === 0 && query.length > 0) {
+                noResultsMessage.classList.remove('hidden');
+            } else {
+                noResultsMessage.classList.add('hidden');
+            }
+
+        });
+    }
 });
 
 function renderRecentEnterprises() {
@@ -297,4 +396,64 @@ function saveToRecent(id, name) {
     }
 
     localStorage.setItem("recent_enterprises", JSON.stringify(recent));
+}
+
+
+
+
+
+function initCustomSelects() {
+    const containers = document.querySelectorAll('.custom-select-container');
+
+    containers.forEach(container => {
+        const trigger = container.querySelector('.custom-select-trigger');
+        const optionsBlock = container.querySelector('.custom-select-options');
+        const arrow = container.querySelector('.custom-select-arrow');
+        const hiddenInput = container.querySelector('.custom-select-value');
+        const triggerText = container.querySelector('.custom-select-text');
+        const options = container.querySelectorAll('.custom-select-option');
+
+        if (!trigger || !optionsBlock) return;
+
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            
+            document.querySelectorAll('.custom-select-options').forEach(block => {
+                if (block !== optionsBlock) block.classList.add('hidden');
+            });
+            document.querySelectorAll('.custom-select-arrow').forEach(arr => {
+                if (arr !== arrow) arr.classList.remove('rotate-180');
+            });
+
+            const isHidden = optionsBlock.classList.contains('hidden');
+            if (isHidden) {
+                optionsBlock.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                optionsBlock.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        });
+
+        options.forEach(option => {
+            option.addEventListener('click', function () {
+                const val = this.getAttribute('data-value');
+                const text = this.textContent.trim();
+
+                if (hiddenInput && triggerText) {
+                    hiddenInput.value = val;
+                    triggerText.textContent = text;
+                    triggerText.classList.remove('text-gray-400', 'dark:text-gray-400');
+                }
+
+                optionsBlock.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            });
+        });
+    });
+
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.custom-select-options').forEach(block => block.classList.add('hidden'));
+        document.querySelectorAll('.custom-select-arrow').forEach(arr => arr.classList.remove('rotate-180'));
+    });
 }

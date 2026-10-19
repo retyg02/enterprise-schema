@@ -31,3 +31,8 @@ function updateToggleUI(isDark) {
         ball.textContent = "☀️";
     }
 }
+
+
+
+
+

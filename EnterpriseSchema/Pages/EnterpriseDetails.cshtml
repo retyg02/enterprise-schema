@@ -367,9 +367,37 @@
             <div>
                 <label class="block font-semibold text-gray-500 uppercase mb-1">Тип доступа (Справочник)</label>
                 <div class="flex space-x-2">
-                    <select id="accessAccessTypeId" asp-items="Model.AccessTypeList" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <option value="">-- Выберите тип (SSH/DB/VPN) --</option>
-                    </select>
+
+                    <div class="relative w-full custom-select-container">
+    
+                    <input type="hidden" id="accessAccessTypeId" name="AccessTypeId" class="custom-select-value" required value="" />
+
+                    <div class="custom-select-trigger w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg pl-3 pr-10 py-2 text-sm text-gray-900 dark:text-white flex items-center justify-between cursor-pointer select-none transition-all duration-200 focus:outline-none">
+                        <span class="custom-select-text text-gray-400 dark:text-gray-400">-- Выберите тип (SSH/DB/VPN) --</span>
+                        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="custom-select-arrow w-4 h-4 text-gray-400 transition-transform duration-200">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
+
+                    <div class="custom-select-options hidden absolute left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 transition-all duration-200 style-scrollbar">
+                    @if (Model.AccessTypeList != null && Model.AccessTypeList.Any())
+                    {
+                        @foreach(var item in Model.AccessTypeList)
+                        {
+                        <div data-value="@item.Value" class="custom-select-option px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700 hover:text-indigo-600 dark:hover:text-white cursor-pointer select-none transition-colors">
+                            @item.Text
+                        </div>
+                        }
+                    }
+                    else
+                    {
+                    <div class="px-4 py-2 text-sm text-gray-400 dark:text-gray-500 italic select-none">
+                        Нет доступных типов доступа
+                    </div>
+                    }
+                </div>
+            </div>
+
                     <button type="button" onclick="openModal('accessTypeModal')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 px-3 rounded-lg text-sm focus:outline-none transition-colors" title="Добавить новый тип доступа">+</button>
                 </div>
 
