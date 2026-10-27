@@ -30,6 +30,9 @@ public class Access
     [StringLength(500, ErrorMessage = "Примечание не может быть длиннее 500 символов")]
     public string? Note { get; set; }
 
+    [Required]
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
     public int? HostId { get; set; }
     public virtual Host? Host { get; set; }
 

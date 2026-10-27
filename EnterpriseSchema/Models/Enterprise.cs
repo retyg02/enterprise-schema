@@ -18,10 +18,18 @@ public class Enterprise
     [Required(ErrorMessage = "Контактные данные обязательны для заполнения")]
     [StringLength(100, ErrorMessage = "Длина контактных данных не может превышать 100 символов")]
     public string Contact { get; set; } = string.Empty;
-    
+
+    [StringLength(30)]
+    public string? ContactPhone { get; set; }
+
+
     [StringLength(500, ErrorMessage = "Примечание не может быть длиннее 500 символов")]
     public string? Note { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [Required]
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
 
 
     public virtual ICollection<Host> Hosts { get; set; } = new List<Host>();

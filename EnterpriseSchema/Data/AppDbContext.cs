@@ -135,6 +135,8 @@ namespace EnterpriseSchema.Data
         public DbSet<Enterprise> Enterprises { get; set; }
         public DbSet<Access> Accesses { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserFavorite> UserFavorites { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         public DbSet<CityDict> CityDictionaries { get; set; }
         public DbSet<AccessTypeDict> AccessTypeDictionaries { get; set; }

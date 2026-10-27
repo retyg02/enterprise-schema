@@ -62,6 +62,9 @@ namespace EnterpriseSchema.Pages
             {
                 _context.Hosts.Add(host);
                 await _context.SaveChangesAsync();
+
+                await LogActionAsync("Host", host.Id, "Create", $"Создан хост «{host.Name}»", enterpriseIdToUpdate: enterpriseId);
+                await _context.SaveChangesAsync();
             }
 
             return new JsonResult(new { success = true });
@@ -74,7 +77,38 @@ namespace EnterpriseSchema.Pages
                 var host = await _context.Hosts.FindAsync(id);
                 if (host != null)
                 {
+
+
+                    if (_context.Accesses != null)
+                    {
+                        var dependentAccesses = await _context.Accesses
+                            .Where(a => a.HostId == id)
+                            .ToListAsync();
+
+                        if (dependentAccesses.Any())
+                        {
+                            foreach (var access in dependentAccesses)
+                            {
+                                await LogActionAsync(
+                                    "Access",
+                                    access.Id,
+                                    "Delete",
+                                    $"Удален связанный доступ {access.Login} из-за удаления сервера {host.Name}"
+                                );
+                            }
+
+                            _context.Accesses.RemoveRange(dependentAccesses);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
+
+                    int parentEnterpriseId = host.EnterpriseId;
+
                     _context.Hosts.Remove(host);
+                    await _context.SaveChangesAsync();
+
+                    await LogActionAsync("Host", host.Id, "Delete", $"Удален хост «{host.Name}»", enterpriseIdToUpdate: parentEnterpriseId);
                     await _context.SaveChangesAsync();
                 }
             }
@@ -131,8 +165,39 @@ namespace EnterpriseSchema.Pages
             if (_context.Accesses != null)
             {
                 _context.Accesses.Add(access);
+                await _context.SaveChangesAsync(); 
+
+                int parentEnterpriseId = 0;
+                var relatedHost = await _context.Hosts.FindAsync(access.HostId);
+                if (relatedHost != null)
+                {
+                    parentEnterpriseId = relatedHost.EnterpriseId;
+
+                    relatedHost.UpdatedAt = DateTime.Now;
+                    _context.Entry(relatedHost).State = EntityState.Modified;
+                }
+
+                string accessTypeName = "Неизвестный тип";
+                var typeDict = await _context.AccessTypeDictionaries.FindAsync(access.AccessTypeId);
+                if (typeDict != null)
+                {
+                    accessTypeName = typeDict.Name;
+                }
+
+                await LogActionAsync(
+                    entityType: "Access",
+                    entityId: access.Id,
+                    actionType: "Create",
+                    description: $"Создан доступ «{accessTypeName}»",
+                    enterpriseIdToUpdate: parentEnterpriseId != 0 ? parentEnterpriseId : null
+                );
+
+                access.UpdatedAt = DateTime.Now;
+                _context.Entry(access).State = EntityState.Modified;
+
                 await _context.SaveChangesAsync();
             }
+
 
             return new JsonResult(new { success = true });
         }
@@ -212,6 +277,9 @@ namespace EnterpriseSchema.Pages
                         await _context.Set<ServiceDict>().AddRangeAsync(servicesToCreate);
                     }
 
+                    await _context.SaveChangesAsync();
+
+                    await LogActionAsync("Host", host.Id, "Update", $"Обновлен хост «{host.Name}»", hostIdToUpdate: host.Id, enterpriseIdToUpdate: host.EnterpriseId); 
                     await _context.SaveChangesAsync();
                 }
             }
@@ -303,13 +371,46 @@ namespace EnterpriseSchema.Pages
                 var access = await _context.Accesses.FindAsync(id);
                 if (access != null)
                 {
+                    int? parentHostId = access.HostId;
+                    int? parentEnterpriseId = null;
+
+                    if (_context.Hosts != null)
+                    {
+                        var relatedHost = await _context.Hosts.FindAsync(parentHostId);
+                        if (relatedHost != null)
+                        {
+                            parentEnterpriseId = relatedHost.EnterpriseId;
+
+                            relatedHost.UpdatedAt = DateTime.Now;
+                            _context.Entry(relatedHost).State = EntityState.Modified;
+                        }
+                    }
+
                     _context.Accesses.Remove(access);
+                    await _context.SaveChangesAsync();
+
+
+                    string accessTypeName = "Неизвестный тип";
+                    var typeDict = await _context.AccessTypeDictionaries.FindAsync(access.AccessTypeId);
+                    if (typeDict != null)
+                    {
+                        accessTypeName = typeDict.Name;
+                    }
+
+                    await LogActionAsync(
+                        entityType: "Access",
+                        entityId: id,
+                        actionType: "Delete",
+                        description: $"Удален доступ с логином «{accessTypeName}»",
+                        enterpriseIdToUpdate: parentEnterpriseId
+                    );
+
                     await _context.SaveChangesAsync();
                 }
             }
-
             return new JsonResult(new { success = true });
         }
+
 
 
 
@@ -364,5 +465,62 @@ namespace EnterpriseSchema.Pages
 
             return Page();
         }
+
+
+
+
+
+
+        private async Task LogActionAsync(string entityType, int entityId, string actionType, string description, int? enterpriseIdToUpdate = null, int? hostIdToUpdate = null, int? accessIdToUpdate = null)
+        {
+            var currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+                                  ?? User.Identity?.Name
+                                  ?? "Система / Аноним";
+
+            var logEntry = new AuditLog
+            {
+                UserId = currentUserName,
+                EntityType = entityType,
+                EntityId = entityId,
+                ActionType = actionType,
+                Description = description,
+                Timestamp = DateTime.Now
+            };
+
+            await _context.AuditLogs.AddAsync(logEntry);
+
+
+            if (enterpriseIdToUpdate.HasValue)
+            {
+                var enterprise = await _context.Enterprises.FindAsync(enterpriseIdToUpdate.Value);
+                if (enterprise != null)
+                {
+                    enterprise.UpdatedAt = DateTime.Now;
+                    _context.Entry(enterprise).State = EntityState.Modified;
+                }
+            }
+            if (hostIdToUpdate.HasValue)
+            {
+                var host = await _context.Hosts.FindAsync(hostIdToUpdate.Value);
+                if (host != null)
+                {
+                    host.UpdatedAt = DateTime.Now;
+                    _context.Entry(host).State = EntityState.Modified;
+                }
+            }
+            if (accessIdToUpdate.HasValue)
+            {
+                var access = await _context.Accesses.FindAsync(accessIdToUpdate.Value);
+                if (access != null)
+                {
+                    access.UpdatedAt = DateTime.Now;
+                    _context.Entry(access).State = EntityState.Modified;
+                }
+            }
+        }
+
+
+
+
     }
 }

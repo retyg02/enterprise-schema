@@ -730,3 +730,243 @@ function initCustomSelects() {
         document.querySelectorAll('.custom-select-arrow').forEach(arr => arr.classList.remove('rotate-180'));
     });
 }
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    document.addEventListener('click', function(e) {
+        
+        const copyElement = e.target.closest('.js-universal-copy');
+        if (!copyElement) return;
+
+        if (e.target.closest('a') || e.target.closest('button')) {
+            e.preventDefault();
+        }
+
+        const textToCopy = copyElement.innerText.trim();
+        if (!textToCopy) return;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            
+            copyElement.classList.add(
+                '!bg-indigo-600', 
+                '!text-white', 
+                'scale-[1.03]', 
+                'shadow-md', 
+                'transition-all', 
+                'duration-150'
+            );
+            
+            const innerSVGs = copyElement.querySelectorAll('svg, path');
+            innerSVGs.forEach(svg => {
+                svg.style.setProperty('stroke', '#ffffff', 'important');
+            });
+
+            setTimeout(() => {
+                copyElement.classList.remove(
+                    '!bg-indigo-600', 
+                    '!text-white', 
+                    'scale-[1.03]', 
+                    'shadow-md'
+                );
+                innerSVGs.forEach(svg => {
+                    svg.style.removeProperty('stroke');
+                });
+            }, 200);
+
+        }).catch(err => {
+            console.error('Критический сбой работы буфера обмена:', err);
+        });
+    });
+});
+
+
+
+
+console.log('1');
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("universalEditModal");
+    const editForm = document.getElementById("universal-edit-form"); 
+    const editInput = document.getElementById("modal-edit-input");
+    const errorSummary = document.getElementById("modal-edit-error-summary");
+
+    const btnClose = document.getElementById("btn-close-edit-modal");
+    const btnCancel = document.getElementById("btn-cancel-edit-modal");
+
+    const modalContent = modal ? modal.querySelector('.transform') : null;
+
+    if (!modal || !editForm || !editInput) {
+        return;
+    }
+
+    document.addEventListener("click", (e) => {
+        const trigger = e.target.closest(".js-btn-trigger-edit");
+        if (!trigger) return;
+
+        e.preventDefault();
+
+        const fieldKey = trigger.getAttribute("data-field-key"); 
+        const fieldTitle = trigger.getAttribute("data-field-title");
+        const fieldLabel = trigger.getAttribute("data-field-label");
+
+        const mirrorInput = document.getElementById(`details-mirror-${fieldKey}`);
+        const currentMirrorValue = mirrorInput ? mirrorInput.value : "";
+
+        document.getElementById("modal-edit-title").textContent = fieldTitle;
+        document.getElementById("modal-edit-label").textContent = fieldLabel;
+        document.getElementById("modal-field-key").value = fieldKey;
+
+        editInput.value = currentMirrorValue.trim();
+        if (errorSummary) errorSummary.classList.add("hidden");
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
+        setTimeout(() => {
+            if (modalContent) {
+                modalContent.classList.remove("scale-95", "opacity-0");
+                modalContent.classList.add("scale-100", "opacity-100");
+            }
+
+            editInput.focus();
+            editInput.select();
+        }, 20);
+    });
+
+    function closeEditModal() {
+        if (modalContent) {
+            modalContent.classList.remove("scale-100", "opacity-100");
+            modalContent.classList.add("scale-95", "opacity-0");
+        }
+        setTimeout(() => {
+            modal.classList.remove("flex");
+            modal.classList.add("hidden");
+            editForm.classList.remove("pointer-events-none", "opacity-70");
+        }, 300);
+    }
+
+    if (btnClose) btnClose.addEventListener("click", closeEditModal);
+    if (btnCancel) btnCancel.addEventListener("click", closeEditModal);
+
+    editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        editForm.classList.add("pointer-events-none", "opacity-70");
+        if (errorSummary) errorSummary.classList.add("hidden");
+
+        const targetFieldKey = document.getElementById("modal-field-key").value;
+        const newValue = editInput.value.trim();
+
+        const targetMirror = document.getElementById(`details-mirror-${targetFieldKey}`);
+        if (targetMirror) {
+            targetMirror.value = newValue;
+        }
+
+        const updateData = {
+            id: parseInt(document.getElementById("details-mirror-id").value),
+            name: document.getElementById("details-mirror-name").value.trim(),
+            cityId: parseInt(document.getElementById("details-mirror-cityId").value),
+            contact: document.getElementById("details-mirror-contact").value.trim(),
+            contactPhone: document.getElementById("details-mirror-contactPhone").value.trim(),
+            note: document.getElementById("details-mirror-note").value.trim()
+        };
+
+        console.log(updateData);
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
+
+        try {
+            
+            const response = await fetch("/Index?handler=Update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify(updateData)
+            });
+            
+            if (response.ok) {
+                console.log('1');
+                
+
+                
+                
+                document.getElementById(`details-display-context-${targetFieldKey}`).innerText = newValue;
+                
+                
+
+                closeEditModal();
+            } else {
+                const errData = await response.json();
+                showErrors(errData.errors || ["Произошла ошибка при сохранении данных в базу"]);
+            }
+        } catch (error) {
+            console.log(targetFieldKey);
+            console.log(document.getElementById(`details-display-context-${targetFieldKey}`));
+            console.error("ошибка:", error);
+            showErrors(["Не удалось связаться с сервером. Проверьте подключение к сети."]);
+        } finally {
+            editForm.classList.remove("pointer-events-none", "opacity-70");
+        }
+    });
+
+    function showErrors(errorsArray) {
+        if (!errorSummary) return;
+        const ul = errorSummary.querySelector("ul");
+        if (!ul) return;
+
+        ul.innerHTML = "";
+        errorsArray.forEach(err => {
+            const li = document.createElement("li");
+            li.textContent = err;
+            ul.appendChild(li);
+        });
+        errorSummary.classList.remove("hidden");
+    }
+});
+
+
+
+
+
+
+async function submitDeleteEnt(event, id, name) {
+    event.preventDefault();
+
+    if (!confirm(`Вы уверены, что хотите удалить предприятие "${name}" и все связанные серверы?`)) {
+        return;
+    }
+
+    const ent = document.getElementById('all_enterprise_full');
+    if (ent) {
+        ent.classList.add('blur-[2px]', 'opacity-60', 'pointer-events-none');
+    }
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+    try {
+        const response = await fetch(`/Index?handler=Delete&id=${id}`, {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': token
+            }
+        });
+
+        if (response.ok) {
+            window.location.href = '/Index';
+        } else {
+            if (ent) ent.classList.remove('blur-[2px]', 'opacity-60', 'pointer-events-none');
+            alert('Не удалось удалить предприятие.');
+        }
+    } catch (error) {
+        if (ent) ent.classList.remove('blur-[2px]', 'opacity-60', 'pointer-events-none');
+        console.error('Ошибка при удалении:', error);
+    }
+}
