@@ -20,6 +20,9 @@ public class LoginModel : PageModel
         _context = context;
     }
 
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+
     [BindProperty]
     [StringLength(100, MinimumLength = 5)]
     public string LoginInput { get; set; } = string.Empty;
@@ -29,9 +32,14 @@ public class LoginModel : PageModel
     [StringLength(50, MinimumLength = 2)]
     public string PasswordInput { get; set; } = string.Empty;
 
-    public void OnGet()
+    public IActionResult OnGet()
     {
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            return RedirectToPage("/Index");
+        }
 
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -54,6 +62,10 @@ public class LoginModel : PageModel
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
+                    if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                    {
+                        return Redirect(ReturnUrl);
+                    }
                     return RedirectToPage("/Index");
                 }
             }
