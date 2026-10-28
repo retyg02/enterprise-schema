@@ -2162,3 +2162,59 @@ body.dark-mode [class*="bg-red-50"]:not(form > button) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.view-card.enterprise-card-item {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important; 
+}
+
+    .view-card.enterprise-card-item > .grid {
+        flex-grow: 1 !important;
+        display: grid !important;
+    }
+
+    .view-card.enterprise-card-item .grid > div:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        max-height: 110px !important; 
+    }
+
+        .view-card.enterprise-card-item .grid > div:last-child > p,
+        .view-card.enterprise-card-item .grid > div:last-child > span:last-child {
+            flex-grow: 1 !important;
+            overflow-y: auto !important;
+            padding-right: 4px;
+            max-height: 85px !important;
+        }
+
+            .view-card.enterprise-card-item .grid > div:last-child > p::-webkit-scrollbar,
+            .view-card.enterprise-card-item .grid > div:last-child > span:last-child::-webkit-scrollbar {
+                width: 3px;
+            }
+
+            .view-card.enterprise-card-item .grid > div:last-child > p::-webkit-scrollbar-thumb,
+            .view-card.enterprise-card-item .grid > div:last-child > span:last-child::-webkit-scrollbar-thumb {
+                background-color: #4f46e5;
+                border-radius: 9px;
+            }
