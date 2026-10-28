@@ -9,10 +9,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Реестр</title>
-    <script src="~/js/tailwind.js"></script>
+    <script src="~/js/tailwind.js" asp-append-version="true"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EnterpriseSchema.styles.css" asp-append-version="true" />
-    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
 
 <body class="h-screen overflow-hidden bg-gray-50 bg-[url('/bg.webp')] bg-repeat bg-[length:200px_200px] bg-opacity-[0.03] text-gray-950 min-h-screen flex flex-col">
@@ -35,7 +35,8 @@
 
 
             <div onclick="window.location.href = './Index';" class="cursor-pointer flex items-center space-x-3">
-                <img src="~/logo.png" class="w-[35px]" />
+                <img src="~/logo.png" asp-append-version="true" class="w-[35px]" alt="Stek Labs" />
+
 
                 <span class="text-xl font-bold tracking-tight text-indigo-600 sm:block hidden">Stek Labs</span>
                 <span class="text-2xl font-bold tracking-tight text-indigo-600 block sm:hidden">S L</span>
