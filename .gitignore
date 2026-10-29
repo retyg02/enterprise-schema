@@ -13,3 +13,5 @@ EnterpriseSchema/bin/release/net10.0/*
 
 !EnterpriseSchema/bin/release/net10.0/publish/
 !EnterpriseSchema/bin/release/net10.0/publish/**
+
+systemd.txt
