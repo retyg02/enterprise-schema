@@ -78,11 +78,11 @@ function closeModal(id, isNotModal = false) {
 
 async function submitCityForm(event) {
     event.preventDefault();
-
+    console.log(1);
     const input = document.getElementById('cityNameInput');
     const cityName = input.value.trim();
     if (!cityName) return;
-
+    console.log(2);
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
     try {
@@ -94,13 +94,16 @@ async function submitCityForm(event) {
             },
             body: JSON.stringify(cityName)
         });
-
+        console.log(cityName);
         if (response.ok) {
-    const data = await response.json();
+            console.log(3);
+            const data = await response.json();
+            console.log(4);
+            console.log(data);
 
-    const container = document.querySelector('.custom-select-container');
+            const container = document.querySelector('#main_select_container.custom-select-container');
     if (container) {
-        const optionsBlock = container.querySelector('.custom-select-options');
+        const optionsBlock = container.querySelector('#main_select.custom-select-options');
         const hiddenInput = container.querySelector('.custom-select-value');
         const triggerText = container.querySelector('.custom-select-text');
 
@@ -416,7 +419,7 @@ function initCustomSelects() {
     });
 }
 
-
+const btnGrid = document.getElementById('view-mode-grid');
 
 
 
@@ -436,7 +439,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const hiddenCityInput = document.getElementById('Filter_CityId');
     const cityOptionsBlock = document.getElementById('filter-city-options');
     const btnList = document.getElementById('view-mode-list');
-    const btnGrid = document.getElementById('view-mode-grid');
     const tableHeader = document.getElementById('enterprises-table-header');
     const counterBadge = document.getElementById('counter-badge');
     const noResultsMessage = document.getElementById('no-results-message');

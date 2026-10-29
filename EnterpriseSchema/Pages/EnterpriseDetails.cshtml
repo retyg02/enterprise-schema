@@ -47,7 +47,7 @@
                         
                         
                         
-                        <span id="details-display-context-name">@Model.Enterprise?.Name</span></span>
+                        <span data-copy-green id="details-display-context-name">@Model.Enterprise?.Name</span></span>
                     
                     
                     <button type="button"
@@ -142,7 +142,7 @@
                 </button>
 
             </span>
-            <p id="details-display-context-note" class="access-item-card text-sm text-gray-700 italic bg-gray-50 p-3 rounded-md border border-gray-100">@Model.Enterprise?.Note</p>
+            <p data-copy-green id="details-display-context-note" class="access-item-card text-sm text-gray-700 italic bg-gray-50 p-3 rounded-md border border-gray-100">@Model.Enterprise?.Note</p>
         </div>
     </div>
 
@@ -201,7 +201,7 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                                 
                                 
                                 <h3 class="mb-[20px] text-lg font-bold text-indigo-900 flex flex-row items-center">
-                                    @host.Name
+                                    <span data-copy-green>@host.Name</span>
                                     <form method="post" onsubmit="submitDeleteHost(event, @host.Id, '@host.Name')" class="inline">
                                         <button type="submit" class="relative top-[2px] left-[5px] text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" title="Удалить сервер">
                                             <svg xmlns="http://w3.org" class="h-4 w-4 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -237,9 +237,9 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                                     </div>
 
                                     <span>•</span>
-                                    <span>Назначение: <strong class="secret-data text-gray-700"><span class="host-purpose-text">@host.Purpose</span></strong></span>
+                                    <span>Назначение: <strong class="secret-data text-gray-700"><span data-copy-green class="host-purpose-text">@host.Purpose</span></strong></span>
                                     <span>•</span>
-                                    <span>Создан: <span class="secret-data">@host.CreatedAt.ToString("dd.MM.yyyy")</span></span>
+                                    <span>Создан: <span data-copy-green class="secret-data">@host.CreatedAt.ToString("dd.MM.yyyy")</span></span>
                                 </div>
                             </div>
                             <div class="host-ip-badge mt-2 sm:mt-0 text-right">
@@ -269,7 +269,7 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                                     <div id="service-card-@service.Id service_section" class="service-row-item border-b border-gray-200 last:border-0 pb-2 last:pb-0 flex flex-col space-y-1">
                                         <div class="secret-data flex flex-row items-center justify-start text-gray-900 font-bold">
                                             
-                                            ● @service.Name
+                                            <span data-copy-green>● @service.Name</span>
                                             <form method="post" onsubmit="submitDeleteService(event, @service.Id, '@service.Name')" class="relative bottom-[1px] inline">
                                                 <button type="submit" class="relative top-[2px] left-[5px] text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 focus:outline-none" title="Удалить сервер">
                                                     <svg xmlns="http://w3.org" class="h-4 w-4 hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -278,7 +278,7 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                                                 </button>
                                             </form>
                                         </div>
-                                        <p class="secret-data text-gray-600 italic pl-3">@service.Description</p>
+                                        <p data-copy-green class="secret-data text-gray-600 italic pl-3">@service.Description</p>
                                         <pre class="js-universal-copy cursor-pointer service-path-card secret-data bg-white p-2 rounded border border-gray-100 font-mono text-indigo-600 overflow-x-auto whitespace-pre-wrap mt-1 ml-3">Путь: @service.Path</pre>
                                     </div>
                                 }
@@ -294,7 +294,7 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                         {
                             <div id="warning-note-box" class="mb-4 border-l-4 border-amber-500 bg-amber-50 p-3 rounded-r-lg text-xs">
                                 <span class="font-semibold text-amber-800 block mb-1">💡 Свободное поле:</span>
-                                <p class="secret-data text-amber-900 italic">@host.Notes</p>
+                                <p data-copy-green class="secret-data text-amber-900 italic">@host.Notes</p>
                             </div>
                         }
 
@@ -322,7 +322,7 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                                                         </button>
                                                     </form>
 
-                                                    <span class="service-type-badge secret-data px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-200 text-gray-700">@acc.AccessType?.Name</span>
+                                                    <span data-copy-green class="service-type-badge secret-data px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-200 text-gray-700">@acc.AccessType?.Name</span>
                                                     <span class="js-universal-copy cursor-pointer secret-data font-mono text-gray-600">@acc.Address:@acc.Port</span>
                                                 </div>
 
@@ -358,7 +358,7 @@ rounded-lg text-xs shadow-sm transition-colors focus:outline-none">
                                             {
                                                 <div class="mt-2 pt-2 border-t border-gray-200/60">
                                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block mb-1">Инструкция:</span>
-                                                    <pre class="service-desc-box secret-data bg-white p-2 rounded border border-gray-200 text-[11px] font-mono text-gray-600 overflow-x-auto whitespace-pre-wrap">@acc.Note</pre>
+                                                    <pre data-copy-green class="service-desc-box secret-data bg-white p-2 rounded border border-gray-200 text-[11px] font-mono text-gray-600 overflow-x-auto whitespace-pre-wrap">@acc.Note</pre>
                                                 </div>
                                             }
                                         </div>

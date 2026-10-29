@@ -473,7 +473,7 @@ body.dark-mode .custom-select-option {
 }
 
 .custom-select-options {
-    overflow: hidden !important;
+    
     border-radius: 0.5rem !important; 
 }
 
