@@ -80,7 +80,7 @@ namespace EnterpriseSchema.Migrations
                             Note = "Доступ к терминалу",
                             Pass = "/lRxrxhBjAA8xB8Hru6kuA==",
                             Port = 22,
-                            UpdatedAt = new DateTime(2026, 10, 24, 16, 57, 34, 475, DateTimeKind.Local).AddTicks(9136)
+                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(6468)
                         },
                         new
                         {
@@ -92,8 +92,37 @@ namespace EnterpriseSchema.Migrations
                             Note = "Доступ к MySQL",
                             Pass = "579peqYad4xZUbKwgDrEwg==",
                             Port = 3306,
-                            UpdatedAt = new DateTime(2026, 10, 24, 16, 57, 34, 478, DateTimeKind.Local).AddTicks(3958)
+                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 332, DateTimeKind.Local).AddTicks(1745)
                         });
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.AccessFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccessId");
+
+                    b.ToTable("AccessFiles");
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.AccessTypeDict", b =>
@@ -243,20 +272,20 @@ namespace EnterpriseSchema.Migrations
                             Id = 1,
                             CityId = 1,
                             Contact = "Иванов Иван Иванович",
-                            CreatedAt = new DateTime(2026, 7, 24, 11, 57, 34, 475, DateTimeKind.Utc).AddTicks(3874),
+                            CreatedAt = new DateTime(2026, 7, 29, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(803),
                             Name = "Завод1",
                             Note = "Заметка1",
-                            UpdatedAt = new DateTime(2026, 10, 24, 16, 57, 34, 473, DateTimeKind.Local).AddTicks(9427)
+                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 327, DateTimeKind.Local).AddTicks(6436)
                         },
                         new
                         {
                             Id = 2,
                             CityId = 2,
                             Contact = "Петров Петр Петрович",
-                            CreatedAt = new DateTime(2026, 10, 23, 11, 57, 34, 475, DateTimeKind.Utc).AddTicks(4293),
+                            CreatedAt = new DateTime(2026, 10, 28, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(1322),
                             Name = "Завод2",
                             Note = "Заметка2",
-                            UpdatedAt = new DateTime(2026, 10, 24, 16, 57, 34, 475, DateTimeKind.Local).AddTicks(4280)
+                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(1308)
                         });
                 });
 
@@ -328,7 +357,7 @@ namespace EnterpriseSchema.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 11, 57, 34, 475, DateTimeKind.Utc).AddTicks(8046),
+                            CreatedAt = new DateTime(2026, 8, 29, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(5236),
                             EnterpriseId = 1,
                             Ip = "192.168.0.1",
                             Name = "Сервер1",
@@ -338,12 +367,12 @@ namespace EnterpriseSchema.Migrations
                             OsType = "04",
                             OsVer = "22",
                             Purpose = "СЦ",
-                            UpdatedAt = new DateTime(2026, 10, 24, 16, 57, 34, 475, DateTimeKind.Local).AddTicks(5503)
+                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(2513)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 10, 19, 11, 57, 34, 475, DateTimeKind.Utc).AddTicks(8345),
+                            CreatedAt = new DateTime(2026, 10, 24, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(5539),
                             EnterpriseId = 2,
                             Ip = "192.168.0.2",
                             Name = "Сервер2",
@@ -353,7 +382,7 @@ namespace EnterpriseSchema.Migrations
                             OsType = "Bullseye",
                             OsVer = "12",
                             Purpose = "ВС",
-                            UpdatedAt = new DateTime(2026, 10, 24, 16, 57, 34, 475, DateTimeKind.Local).AddTicks(8339)
+                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(5534)
                         });
                 });
 
@@ -456,7 +485,7 @@ namespace EnterpriseSchema.Migrations
                             Id = 1,
                             Login = "login",
                             Name = "User",
-                            Pass = "AQAAAAIAAYagAAAAEC1pXobZl2WvMxG9jUNAbDOTl8/HIeY8Ked6a23qCS4i86evRJBtlvnZiiaTbjIJxQ=="
+                            Pass = "AQAAAAIAAYagAAAAEF9et+AsCWOyH7kQ137b2e4E9W/BKETE47XGwcWSt5QVxckwPVIP9omdgTOW9lMwWA=="
                         });
                 });
 
@@ -497,6 +526,17 @@ namespace EnterpriseSchema.Migrations
                     b.Navigation("AccessType");
 
                     b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.AccessFile", b =>
+                {
+                    b.HasOne("EnterpriseSchema.Models.Access", "Access")
+                        .WithMany("AttachedFiles")
+                        .HasForeignKey("AccessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Access");
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.Enterprise", b =>
@@ -545,6 +585,11 @@ namespace EnterpriseSchema.Migrations
                         .IsRequired();
 
                     b.Navigation("Enterprise");
+                });
+
+            modelBuilder.Entity("EnterpriseSchema.Models.Access", b =>
+                {
+                    b.Navigation("AttachedFiles");
                 });
 
             modelBuilder.Entity("EnterpriseSchema.Models.AccessTypeDict", b =>

@@ -31,6 +31,9 @@ services:
     environment:
       - ConnectionStrings__Conn1=server=db;Port=3306;Database=enterprise_db;Uid=root;Pwd=pass;
       - ASPNETCORE_ENVIRONMENT=Production
+    volumes:
+      - web_uploads:/app/wwwroot/uploads
 
 volumes:
   mysql_data:
+  web_uploads:

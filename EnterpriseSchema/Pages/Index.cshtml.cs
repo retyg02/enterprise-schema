@@ -179,8 +179,11 @@ namespace EnterpriseSchema.Pages
                 Enterprises = await _context.Enterprises
                     .Include(e => e.City)
                     .Include(e => e.Hosts)
-                    .ThenInclude(h => h.Accesses)
-                    .Where(e => e.Name.ToLower().Contains(search) || e.Hosts.Any(h => h.Name.ToLower().Contains(search) || h.Ip.Contains(search)))
+                        .ThenInclude(h => h.Accesses)
+                            .Where(e => e.Name.ToLower().Contains(search) || e.Hosts.Any(h => h.Name.ToLower().Contains(search) || h.Ip.Contains(search)))
+                    .Include(e => e.Hosts)
+                        .ThenInclude(h => h.Accesses)
+                            .ThenInclude(a => a.AttachedFiles)
                     .ToListAsync();
             }
             else
@@ -188,6 +191,9 @@ namespace EnterpriseSchema.Pages
                 Enterprises = await _context.Enterprises
                     .Include(e => e.City)
                     .Include(e => e.Hosts)
+                    .Include(e => e.Hosts)
+                        .ThenInclude(h => h.Accesses)
+                            .ThenInclude(a => a.AttachedFiles)
                     .ToListAsync();
             }
 

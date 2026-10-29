@@ -2218,3 +2218,72 @@ body.dark-mode [class*="bg-red-50"]:not(form > button) {
                 background-color: #4f46e5;
                 border-radius: 9px;
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body .custom-file-pill {
+    background-color: #f8fafc !important; 
+    color: #334155 !important;
+    border-color: #cbd5e1 !important;
+}
+
+    body .custom-file-pill:hover {
+        background-color: #f1f5f9 !important;
+    }
+
+body .custom-file-btn {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border-color: #cbd5e1 !important;
+}
+
+    body .custom-file-btn:hover {
+        background-color: #e2e8f0 !important;
+    }
+
+body.dark-mode .custom-file-pill {
+    background-color: #1f2937 !important;
+    color: #e5e7eb !important;
+    border-color: #374151 !important;
+}
+
+body.dark-mode .custom-file-pill:hover {
+    background-color: #374151 !important;
+}
+
+body.dark-mode .custom-file-btn {
+    background-color: #1f2937 !important;
+    color: #9ca3af !important;
+    border-color: #374151 !important;
+}
+
+    body.dark-mode .custom-file-btn:hover {
+        background-color: #374151 !important;
+        color: #ffffff !important;
+    }

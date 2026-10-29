@@ -7,15 +7,24 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace EnterpriseSchema.Pages
 {
     public class EnterpriseDetailsModel : PageModel
     {
         private readonly AppDbContext _context;
-        public EnterpriseDetailsModel(AppDbContext context)
+        private readonly IWebHostEnvironment _environment;
+        public EnterpriseDetailsModel(AppDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
         public Enterprise? Enterprise { get; set; }
         public SelectList? ServiceList { get; set; }
@@ -442,6 +451,9 @@ namespace EnterpriseSchema.Pages
                     .ThenInclude(h => h.Accesses)
                         .ThenInclude(a => a.AccessType)
                 .Include(e => e.Hosts)
+                    .ThenInclude(h => h.Accesses)
+                        .ThenInclude(a => a.AttachedFiles)
+                .Include(e => e.Hosts)
                     .ThenInclude(h => h.Services)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
@@ -465,6 +477,81 @@ namespace EnterpriseSchema.Pages
 
             return Page();
         }
+
+
+
+
+
+
+
+
+
+
+
+        public async Task<IActionResult> OnPostUploadFileAsync(int accessId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { error = "Файл не выбран или пуст" });
+            }
+
+            try
+            {
+                string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string extension = Path.GetExtension(file.FileName);
+                string storedFileName = Guid.NewGuid().ToString() + extension;
+                string filePath = Path.Combine(uploadsFolder, storedFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                var accessFile = new AccessFile
+                {
+                    AccessId = accessId,
+                    FileName = file.FileName,
+                    StoredFileName = storedFileName,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+
+
+                var entry = _context.Entry(accessFile);
+                entry.State = EntityState.Added;
+
+                if (entry.Reference(f => f.Access).CurrentValue != null)
+                {
+                    _context.Entry(entry.Reference(f => f.Access).CurrentValue).State = EntityState.Detached;
+                }
+
+                await _context.SaveChangesAsync();
+
+
+                return new JsonResult(new
+                {
+                    success = true,
+                    fileId = accessFile.Id,
+                    fileName = accessFile.FileName,
+                    storedFileName = accessFile.StoredFileName
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Ошибка при сохранении: {ex}" });
+            }
+
+        }
+
+
+
+
+
 
 
 

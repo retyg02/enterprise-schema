@@ -970,3 +970,64 @@ async function submitDeleteEnt(event, id, name) {
         console.error('Ошибка при удалении:', error);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function uploadAccessFile(input, accessId) {
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('accessId', accessId);
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+    fetch(`?handler=UploadFile`, {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': token
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+    if (data.success) {
+        const filesContainer = document.getElementById(`files-list-${accessId}`);
+        if (filesContainer) {
+            const fileLink = document.createElement('a');
+            
+            fileLink.href = `/uploads/${data.storedFileName}`;
+            fileLink.setAttribute('download', data.fileName);
+            
+            fileLink.className = "custom-file-pill inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-xs text-gray-700 dark:text-gray-200 rounded border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer decoration-none";
+            fileLink.innerHTML = `📎 ${data.fileName}`;
+            
+            filesContainer.appendChild(fileLink);
+        }
+        input.value = '';
+    } else {
+        alert('Ошибка загрузки: ' + data.error);
+    }
+})
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Критическая ошибка при отправке файла');
+    });
+}

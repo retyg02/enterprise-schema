@@ -16,7 +16,7 @@ while true; do
     if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "302" ]; then
         if [ "$IS_DOWN" = false ]; then
             MESSAGE="Сервер не отвечает. Код ответа: $HTTP_CODE"
-            curl -s -X POST "https://telegram.org" \
+            curl -s -X POST "api.telegram.org/bot$BOT_TOKEN/sendMessage" \
                 -d "chat_id=$CHAT_ID" \
                 -d "text=$MESSAGE" > /dev/null
             IS_DOWN=true
@@ -25,7 +25,7 @@ while true; do
     else
         if [ "$IS_DOWN" = true ]; then
             MESSAGE="Сервер ожил. Код ответа: $HTTP_CODE"
-            curl -s -X POST "https://telegram.org" \
+            curl -s -X POST "api.telegram.org/bot$BOT_TOKEN/sendMessage" \
                 -d "chat_id=$CHAT_ID" \
                 -d "text=$MESSAGE" > /dev/null
             IS_DOWN=false

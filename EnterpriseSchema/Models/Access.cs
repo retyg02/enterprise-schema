@@ -33,6 +33,10 @@ public class Access
     [Required]
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
+
+    public List<AccessFile> AttachedFiles { get; set; } = new();
+
+
     public int? HostId { get; set; }
     public virtual Host? Host { get; set; }
 

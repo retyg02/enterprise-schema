@@ -142,5 +142,9 @@ namespace EnterpriseSchema.Data
         public DbSet<AccessTypeDict> AccessTypeDictionaries { get; set; }
         public DbSet<ServiceDict> ServiceDictionaries { get; set; }
 
+
+
+        public DbSet<AccessFile> AccessFiles { get; set; }
+
     }
 }

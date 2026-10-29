@@ -571,6 +571,19 @@ break-words border border-gray-700 dark:border-gray-600">
                                                         </button>
                                                     </div>
                                                 </div>
+                                                @if (access.AttachedFiles != null && access.AttachedFiles.Any())
+                                                {
+                                                    <div class="flex flex-wrap gap-1.5 mt-2 pt-1.5 border-t border-dashed border-slate-200 dark:border-slate-700">
+                                                        @foreach (var file in access.AttachedFiles)
+                                                        {
+                                                            <a href="/uploads/@file.StoredFileName" 
+                                                                download="@file.FileName" 
+                                                                class="custom-file-pill inline-flex items-center gap-1 px-2 py-0.5 text-[10px] rounded border transition-colors decoration-none font-medium">
+                                                                    📎 @file.FileName
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     </div>
