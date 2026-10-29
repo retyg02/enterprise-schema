@@ -13,7 +13,13 @@ if (string.IsNullOrWhiteSpace(aesKey)) throw new ArgumentNullException(nameof(ae
 CryptoHelper.EncryptionKey = aesKey;
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connString, serverVersion));
+    options.UseMySql(connString, serverVersion, mySqlOptions =>
+        mySqlOptions.EnableRetryOnFailure(
+        maxRetryCount: 5,
+        maxRetryDelay: System.TimeSpan.FromSeconds(5),
+        errorNumbersToAdd: null
+        )
+    ));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
