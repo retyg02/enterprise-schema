@@ -2287,3 +2287,45 @@ body.dark-mode .custom-file-btn {
         background-color: #374151 !important;
         color: #ffffff !important;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body.dark-mode label.custom-file-btn,
+body.dark-mode label.custom-file-btn svg {
+    color: #9ca3af !important;
+}
+
+    body.dark-mode label.custom-file-btn:hover,
+    body.dark-mode label.custom-file-btn:hover svg {
+        color: #ffffff !important;
+        background-color: #374151 !important;
+    }

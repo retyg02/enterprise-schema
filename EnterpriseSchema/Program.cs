@@ -11,7 +11,9 @@ var serverVersion = new MySqlServerVersion(new Version(8, 0, 0));
 
 var aesKey = builder.Configuration["CryptoSettings:AesKey"];
 if (string.IsNullOrWhiteSpace(aesKey)) throw new ArgumentNullException(nameof(aesKey), "Ошибка: Мастер-ключ отсутствует");
-CryptoHelper.EncryptionKey = aesKey;
+// сетер у private поля вместо присваивания
+CryptoHelper.SetEncryptionKey(aesKey);
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connString, serverVersion, mySqlOptions =>

@@ -26,7 +26,7 @@ namespace EnterpriseSchema.Pages
                     .Include(a => a.AccessType)
                     .Include(a => a.Host)
                         .ThenInclude(h => h.Enterprise)
-                    .OrderByDescending(a => a.UpdatedAt)
+                    .OrderByDescending(a => a.UpdatedAtUtc)
                     .ToListAsync();
             }
         }

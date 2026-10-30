@@ -94,6 +94,10 @@
 
             <div id="access-card-@access.Id" class="logs-row flex flex-col md:grid md:grid-cols-12 gap-2.5 md:gap-4 px-4 py-4 md:px-6 md:py-4 bg-slate-50/50 dark:bg-slate-900/30 md:bg-transparent md:dark:bg-transparent rounded-xl md:rounded-none border border-slate-100 dark:border-slate-800/80 md:border-none hover:bg-slate-50/80 md:hover:bg-slate-50 dark:hover:bg-slate-900/60 md:dark:hover:bg-slate-900/40 transition-all text-sm items-start md:items-center">
 
+                <span class="log-field-enterprise" style="display: none !important;">
+                    @access.Host?.Enterprise?.Name
+                </span>
+
                 <div class="w-full md:col-span-2 flex items-center">
                     <span class="md:hidden text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24 flex-shrink-0">Тип:</span>
                     

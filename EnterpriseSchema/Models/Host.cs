@@ -26,7 +26,7 @@ public class Host
     [StringLength(30)]
     public string OsVer { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Тип  ОС обязателен")]
+    [Required(ErrorMessage = "Тип ОС обязателен")]
     [StringLength(30)]
     public string OsType { get; set; } = string.Empty;
 
@@ -37,10 +37,13 @@ public class Host
 
     [StringLength(500, ErrorMessage = "Заметка не может превышать 500 символов")]
     public string? Notes { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    // сделал utc время
+    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+    // сделал utc время
     [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 
 
     public int EnterpriseId { get; set; }

@@ -60,7 +60,7 @@ namespace EnterpriseSchema.Data
                     CityId = 1, 
                     Contact = "Иванов Иван Иванович",
                     Note = "Заметка1",
-                    CreatedAt = DateTime.UtcNow.AddMonths(-3)
+                    CreatedAtUtc = DateTime.UtcNow.AddMonths(-3)
                 },
                 new Enterprise
                 {
@@ -69,7 +69,7 @@ namespace EnterpriseSchema.Data
                     CityId = 2, 
                     Contact = "Петров Петр Петрович",
                     Note = "Заметка2",
-                    CreatedAt = DateTime.UtcNow.AddDays(-1)
+                    CreatedAtUtc = DateTime.UtcNow.AddDays(-1)
                 }
             );
 
@@ -86,7 +86,7 @@ namespace EnterpriseSchema.Data
                     NetworkInterfaces = "IfConfig output",
                     Notes = "Свободное поле",
                     EnterpriseId = 1,
-                    CreatedAt = DateTime.UtcNow.AddMonths(-2)
+                    CreatedAtUtc = DateTime.UtcNow.AddMonths(-2)
                 },
                 new Models.Host
                 {
@@ -100,7 +100,7 @@ namespace EnterpriseSchema.Data
                     NetworkInterfaces = "ipconfig output",
                     Notes = "Свободное поле",
                     EnterpriseId = 2,
-                    CreatedAt = DateTime.UtcNow.AddDays(-5)
+                    CreatedAtUtc = DateTime.UtcNow.AddDays(-5)
                 }
             );
 

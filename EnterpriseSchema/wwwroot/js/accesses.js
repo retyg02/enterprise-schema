@@ -50,11 +50,14 @@
             const userText = row.querySelector(".log-field-user")?.textContent.toLowerCase() || "";
             const descText = row.querySelector(".log-field-description")?.textContent.toLowerCase() || "";
 
+            const enterpriseText = row.querySelector(".log-field-enterprise")?.textContent.toLowerCase() || "";
+
             const matchesSearch =
                 typeText.includes(searchText) ||
                 socketText.includes(searchText) ||
                 userText.includes(searchText) ||
-                descText.includes(searchText);
+                descText.includes(searchText) ||
+                enterpriseText.includes(searchText);
 
             if (matchesSearch) {
                 row.style.setProperty("display", "", "important"); 

@@ -57,7 +57,10 @@ public class LoginModel : PageModel
 
                 if (verificationResult == PasswordVerificationResult.Success)
                 {
-                    var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Login) };
+                    var claims = new List<Claim> { 
+                        new Claim(ClaimTypes.Name, user.Login),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    };
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));

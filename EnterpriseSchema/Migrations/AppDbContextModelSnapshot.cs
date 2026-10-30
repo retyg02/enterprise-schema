@@ -58,7 +58,7 @@ namespace EnterpriseSchema.Migrations
                     b.Property<int>("Port")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
@@ -80,7 +80,7 @@ namespace EnterpriseSchema.Migrations
                             Note = "Доступ к терминалу",
                             Pass = "/lRxrxhBjAA8xB8Hru6kuA==",
                             Port = 22,
-                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(6468)
+                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(4498)
                         },
                         new
                         {
@@ -92,7 +92,7 @@ namespace EnterpriseSchema.Migrations
                             Note = "Доступ к MySQL",
                             Pass = "579peqYad4xZUbKwgDrEwg==",
                             Port = 3306,
-                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 332, DateTimeKind.Local).AddTicks(1745)
+                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 418, DateTimeKind.Utc).AddTicks(3525)
                         });
                 });
 
@@ -245,7 +245,7 @@ namespace EnterpriseSchema.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
@@ -257,7 +257,7 @@ namespace EnterpriseSchema.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
@@ -272,20 +272,20 @@ namespace EnterpriseSchema.Migrations
                             Id = 1,
                             CityId = 1,
                             Contact = "Иванов Иван Иванович",
-                            CreatedAt = new DateTime(2026, 7, 29, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(803),
+                            CreatedAtUtc = new DateTime(2026, 7, 30, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(8816),
                             Name = "Завод1",
                             Note = "Заметка1",
-                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 327, DateTimeKind.Local).AddTicks(6436)
+                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(7317)
                         },
                         new
                         {
                             Id = 2,
                             CityId = 2,
                             Contact = "Петров Петр Петрович",
-                            CreatedAt = new DateTime(2026, 10, 28, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(1322),
+                            CreatedAtUtc = new DateTime(2026, 10, 29, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(9322),
                             Name = "Завод2",
                             Note = "Заметка2",
-                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(1308)
+                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(9318)
                         });
                 });
 
@@ -297,7 +297,7 @@ namespace EnterpriseSchema.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("EnterpriseId")
@@ -342,7 +342,7 @@ namespace EnterpriseSchema.Migrations
                     b.Property<int?>("ServiceDictId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
@@ -357,7 +357,7 @@ namespace EnterpriseSchema.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 8, 29, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(5236),
+                            CreatedAtUtc = new DateTime(2026, 8, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(3220),
                             EnterpriseId = 1,
                             Ip = "192.168.0.1",
                             Name = "Сервер1",
@@ -367,12 +367,12 @@ namespace EnterpriseSchema.Migrations
                             OsType = "04",
                             OsVer = "22",
                             Purpose = "СЦ",
-                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(2513)
+                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(494)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 10, 24, 15, 11, 44, 329, DateTimeKind.Utc).AddTicks(5539),
+                            CreatedAtUtc = new DateTime(2026, 10, 25, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(3531),
                             EnterpriseId = 2,
                             Ip = "192.168.0.2",
                             Name = "Сервер2",
@@ -382,7 +382,7 @@ namespace EnterpriseSchema.Migrations
                             OsType = "Bullseye",
                             OsVer = "12",
                             Purpose = "ВС",
-                            UpdatedAt = new DateTime(2026, 10, 29, 20, 11, 44, 329, DateTimeKind.Local).AddTicks(5534)
+                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(3528)
                         });
                 });
 
@@ -472,8 +472,7 @@ namespace EnterpriseSchema.Migrations
 
                     b.Property<string>("Pass")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -485,7 +484,7 @@ namespace EnterpriseSchema.Migrations
                             Id = 1,
                             Login = "login",
                             Name = "User",
-                            Pass = "AQAAAAIAAYagAAAAEF9et+AsCWOyH7kQ137b2e4E9W/BKETE47XGwcWSt5QVxckwPVIP9omdgTOW9lMwWA=="
+                            Pass = "AQAAAAIAAYagAAAAEPJ1ijI8+75G0AZzqDBQmcn5Zn8N+lLXkybu4F2HZupxLe311gEJJd8Tj+dwlL9arg=="
                         });
                 });
 
@@ -500,9 +499,8 @@ namespace EnterpriseSchema.Migrations
                     b.Property<int>("EnterpriseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

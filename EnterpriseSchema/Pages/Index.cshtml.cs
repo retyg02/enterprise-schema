@@ -49,18 +49,20 @@ namespace EnterpriseSchema.Pages
 
         public async Task<JsonResult> OnPostToggleFavoriteAsync(int enterpriseId)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
-                return new JsonResult(new { success = false, message = "Пользователь не авторизован" });
+                return new JsonResult(new { success = false, message = "Пользователь не авторизован или ID некорректен" });
             }
+
 
             try
             {
                 var existingFavorite = await _context.UserFavorites
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(f => f.UserId == userId && f.EnterpriseId == enterpriseId);
+                    .FirstOrDefaultAsync(f => f.UserId == userId && 
+                    f.EnterpriseId == enterpriseId);
 
                 bool isFavoriteNow = false;
 
@@ -128,21 +130,32 @@ namespace EnterpriseSchema.Pages
         public async Task<IActionResult> OnPostCreateAsync([FromBody] JsonElement data)
         {
                
-                var enterprise = new Enterprise();
+                
 
                 try
                 {
-                    
-                    if (data.TryGetProperty("name", out var nameProp)) enterprise.Name = nameProp.GetString() ?? string.Empty;
-                    if (data.TryGetProperty("cityId", out var cityProp)) enterprise.CityId = cityProp.GetInt32();
-                    if (data.TryGetProperty("contact", out var contactProp)) enterprise.Contact = contactProp.GetString() ?? string.Empty;
-                    if (data.TryGetProperty("contactPhone", out var contactPhoneProp)) enterprise.ContactPhone = contactPhoneProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("note", out var noteProp)) enterprise.Note = noteProp.GetString();
-                }
-                catch
+
+
+
+                // десериализация через dto класс
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<EnterpriseDto>(data.GetRawText(), options);
+
+                if (dto == null)
                 {
                     return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
                 }
+
+                var enterprise = new Models.Enterprise
+                {
+                
+                    Name = dto.Name,
+                    CityId = dto.CityId,
+                    Contact = dto.Contact,
+                    ContactPhone = dto.ContactPhone,
+                    Note = dto.Note
+                };
+            
 
                 var validationContext = new ValidationContext(enterprise);
                 var validationResults = new List<ValidationResult>();
@@ -164,13 +177,20 @@ namespace EnterpriseSchema.Pages
             }
 
                 return new JsonResult(new { success = true });
+
+
+            }
+            catch
+            {
+                return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
+            }
         }
 
 
 
-        private async Task LoadPageDataAsync(string? searchString = null)
+        private async Task<bool> LoadPageDataAsync(string? searchString = null)
         {
-            if (_context.Enterprises == null) return;
+            if (_context.Enterprises == null) return false;
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
@@ -219,9 +239,19 @@ namespace EnterpriseSchema.Pages
                     .ToListAsync();
             }
 
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
 
-            if (!string.IsNullOrEmpty(userId))
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                UserFavoriteEnterpriseIds = new List<int>();
+                return false;
+            }
+
+
+
+
+            if (userId > 0)
             {
                 UserFavoriteEnterpriseIds = await _context.UserFavorites
                     .Where(f => f.UserId == userId)
@@ -233,6 +263,7 @@ namespace EnterpriseSchema.Pages
                 UserFavoriteEnterpriseIds = new List<int>();
             }
 
+            return true;
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
@@ -290,22 +321,35 @@ namespace EnterpriseSchema.Pages
 
         public async Task<IActionResult> OnPostUpdateAsync([FromBody] JsonElement data)
         {
-            var enterprise = new Enterprise();
+            
             int id = 0;
 
             try
             {
-                if (data.TryGetProperty("id", out var idProp)) id = idProp.GetInt32();
-                if (data.TryGetProperty("name", out var nameProp)) enterprise.Name = nameProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("cityId", out var cityProp)) enterprise.CityId = cityProp.GetInt32();
-                if (data.TryGetProperty("contact", out var contactProp)) enterprise.Contact = contactProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("contactPhone", out var contactPhoneProp)) enterprise.ContactPhone = contactPhoneProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("note", out var noteProp)) enterprise.Note = noteProp.GetString();
-            }
-            catch
-            {
-                return BadRequest(new { errors = new List<string> { "Некорректный формат данных при обновлении" } });
-            }
+
+
+
+                // десериализация через dto класс
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<EnterpriseDto>(data.GetRawText(), options);
+
+                if (dto == null)
+                {
+                    return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
+                }
+
+                var enterprise = new Models.Enterprise
+                {
+
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    CityId = dto.CityId,
+                    Contact = dto.Contact,
+                    ContactPhone = dto.ContactPhone,
+                    Note = dto.Note
+                };
+                
+            
 
             var validationContext = new ValidationContext(enterprise);
             var validationResults = new List<ValidationResult>();
@@ -318,7 +362,7 @@ namespace EnterpriseSchema.Pages
 
             if (_context.Enterprises != null)
             {
-                var dbEnterprise = await _context.Enterprises.FindAsync(id);
+                var dbEnterprise = await _context.Enterprises.FindAsync(enterprise.Id);
                 if (dbEnterprise != null)
                 {
                     dbEnterprise.Name = enterprise.Name;
@@ -336,12 +380,19 @@ namespace EnterpriseSchema.Pages
             }
 
             return new JsonResult(new { success = true });
+
+
+            }
+            catch
+            {
+                return BadRequest(new { errors = new List<string> { "Некорректный формат данных при обновлении" } });
+            }
         }
 
 
         private async Task LogActionAsync(string entityType, int entityId, string actionType, string description, int? enterpriseIdToUpdate = null, int? hostIdToUpdate = null, int? accessIdToUpdate = null)
         {
-            var currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+            var currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                                   ?? User.Identity?.Name
                                   ?? "Система / Аноним";
 
@@ -363,7 +414,7 @@ namespace EnterpriseSchema.Pages
                 var enterprise = await _context.Enterprises.FindAsync(enterpriseIdToUpdate.Value);
                 if (enterprise != null)
                 {
-                    enterprise.UpdatedAt = DateTime.Now;
+                    enterprise.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(enterprise).State = EntityState.Modified;
                 }
             }
@@ -372,7 +423,7 @@ namespace EnterpriseSchema.Pages
                 var host = await _context.Hosts.FindAsync(hostIdToUpdate.Value);
                 if (host != null)
                 {
-                    host.UpdatedAt = DateTime.Now;
+                    host.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(host).State = EntityState.Modified;
                 }
             }
@@ -381,13 +432,53 @@ namespace EnterpriseSchema.Pages
                 var access = await _context.Accesses.FindAsync(accessIdToUpdate.Value);
                 if (access != null)
                 {
-                    access.UpdatedAt = DateTime.Now;
+                    access.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(access).State = EntityState.Modified;
                 }
             }
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public class EnterpriseDto
+        {
+            
+            public int Id { get; set; }
+
+            public string Name { get; set; } = string.Empty;
+            public int CityId { get; set; }
+
+            public string Contact { get; set; } = string.Empty;
+            public string ContactPhone { get; set; } = string.Empty;
+            public string Note { get; set; } = string.Empty;
+
+        }
 
     }
 }

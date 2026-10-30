@@ -769,6 +769,7 @@ document.addEventListener('click', function (e) {
                 applyRegistryFilters();
             }
         } else {
+            console.log(data);
             console.error("Ошибка сохранения избранного в аккаунт");
         }
     })
@@ -899,3 +900,81 @@ if (togglePassBtn) {
 
 
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function openImagePreview(imageUrl) {
+    const modal = document.getElementById('imagePreviewModal');
+    const imgTarget = document.getElementById('previewImageTarget');
+    
+    if (!modal || !imgTarget) return;
+
+    imgTarget.src = imageUrl;
+
+    modal.style.setProperty("display", "flex", "important");
+    
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+    }, 10);
+}
+
+function closeImagePreview() {
+    const modal = document.getElementById('imagePreviewModal');
+    if (!modal) return;
+
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+
+    setTimeout(() => {
+        modal.style.setProperty("display", "none", "important");
+        document.body.style.overflow = '';
+        document.getElementById('previewImageTarget').src = '';
+    }, 300);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('imagePreviewModal');
+    const closeBtn = document.getElementById('closePreviewBtn');
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeImagePreview();
+            }
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeImagePreview();
+        });
+    }
+});
+

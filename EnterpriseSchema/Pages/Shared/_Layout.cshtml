@@ -438,6 +438,49 @@ custom-nav-link">
         </div>
     </footer> *@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="imagePreviewModal" style="display: none !important; background-color: rgba(0, 0, 0, 0.4) !important; backdrop-filter: blur(4px) !important;" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 cursor-pointer">
+    <div class="relative max-w-[90vw] max-h-[90vh] bg-transparent cursor-default">
+        <button id="closePreviewBtn" class="absolute top-3 right-3 z-50 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors cursor-pointer border-none backdrop-blur-sm">
+            <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="previewImageTarget" src="" alt="Предпросмотр" class="w-auto h-auto max-w-[90vw] max-h-[90vh] rounded-2xl object-contain shadow-2xl select-none" />
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

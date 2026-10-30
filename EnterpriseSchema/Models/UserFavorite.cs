@@ -8,13 +8,16 @@ namespace EnterpriseSchema.Models
         [Key]
         public int Id { get; set; }
 
+        // теперь int
         [Required]
-        public string UserId { get; set; } = string.Empty;
+        public int UserId { get; set; }
 
+
+        // добавил
         [Required]
         public int EnterpriseId { get; set; }
 
-        [ForeignKey("EnterpriseId")]
+        // убрал атрибут Foreign Key чтоб стилистически одинаково было все
         public virtual Enterprise? Enterprise { get; set; }
     }
 }

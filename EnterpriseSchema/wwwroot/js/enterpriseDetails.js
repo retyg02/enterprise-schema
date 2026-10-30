@@ -1008,21 +1008,40 @@ function uploadAccessFile(input, accessId) {
     })
     .then(response => response.json())
     .then(data => {
-    if (data.success) {
-        const filesContainer = document.getElementById(`files-list-${accessId}`);
-        if (filesContainer) {
-            const fileLink = document.createElement('a');
-            
-            fileLink.href = `/uploads/${data.storedFileName}`;
-            fileLink.setAttribute('download', data.fileName);
-            
-            fileLink.className = "custom-file-pill inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-xs text-gray-700 dark:text-gray-200 rounded border border-gray-200 dark:border-gray-700 transition-colors cursor-pointer decoration-none";
-            fileLink.innerHTML = `📎 ${data.fileName}`;
-            
-            filesContainer.appendChild(fileLink);
+if (data.success) {
+    const filesContainer = document.getElementById(`files-list-${accessId}`);
+    if (filesContainer) {
+        const wrapper = document.createElement('div');
+        wrapper.className = "inline-flex items-center gap-1";
+
+        const fileLink = document.createElement('a');
+        fileLink.href = `/uploads/${data.storedFileName}`;
+        fileLink.setAttribute('download', data.fileName);
+        fileLink.className = "custom-file-pill inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded border transition-colors decoration-none font-medium";
+        fileLink.innerHTML = `📎 ${data.fileName}`;
+        wrapper.appendChild(fileLink);
+
+        const ext = data.fileName.split('.').pop().toLowerCase();
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(ext);
+
+        if (isImage) {
+            const previewBtn = document.createElement('button');
+            previewBtn.type = "button";
+            previewBtn.className = "custom-file-btn flex items-center justify-center w-7 h-7 rounded-lg border transition-colors cursor-pointer";
+            previewBtn.onclick = () => openImagePreview(`/uploads/${data.storedFileName}`);
+            previewBtn.innerHTML = `
+                <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>`;
+            wrapper.appendChild(previewBtn);
         }
-        input.value = '';
-    } else {
+
+        filesContainer.appendChild(wrapper);
+    }
+    input.value = '';
+}
+ else {
         alert('Ошибка загрузки: ' + data.error);
     }
 })
@@ -1031,3 +1050,83 @@ function uploadAccessFile(input, accessId) {
         alert('Критическая ошибка при отправке файла');
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function openImagePreview(imageUrl) {
+    const modal = document.getElementById('imagePreviewModal');
+    const imgTarget = document.getElementById('previewImageTarget');
+    
+    if (!modal || !imgTarget) return;
+
+    imgTarget.src = imageUrl;
+
+    modal.style.setProperty("display", "flex", "important");
+    
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+    }, 10);
+}
+
+function closeImagePreview() {
+    const modal = document.getElementById('imagePreviewModal');
+    if (!modal) return;
+
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+
+    setTimeout(() => {
+        modal.style.setProperty("display", "none", "important");
+        document.body.style.overflow = '';
+        document.getElementById('previewImageTarget').src = '';
+    }, 300);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('imagePreviewModal');
+    const closeBtn = document.getElementById('closePreviewBtn');
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeImagePreview();
+            }
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeImagePreview();
+        });
+    }
+});

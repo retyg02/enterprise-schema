@@ -30,8 +30,9 @@ public class Access
     [StringLength(500, ErrorMessage = "Примечание не может быть длиннее 500 символов")]
     public string? Note { get; set; }
 
+    // сделал utc время
     [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 
 
     public List<AccessFile> AttachedFiles { get; set; } = new();

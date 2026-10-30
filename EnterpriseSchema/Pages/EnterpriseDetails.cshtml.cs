@@ -33,27 +33,35 @@ namespace EnterpriseSchema.Pages
 
         public async Task<IActionResult> OnPostCreateHostAsync([FromBody] JsonElement data)
         {
-            var host = new Models.Host();
+            
             int enterpriseId = 0;
 
             try
             {
-                if (data.TryGetProperty("enterpriseId", out var entProp)) enterpriseId = entProp.GetInt32();
-                if (data.TryGetProperty("name", out var nameProp)) host.Name = nameProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("ip", out var ipProp)) host.Ip = ipProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("purpose", out var purpProp)) host.Purpose = purpProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("osName", out var osNProp)) host.OsName = osNProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("osVer", out var osVProp)) host.OsVer = osVProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("osType", out var osTProp)) host.OsType = osTProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("networkInterfaces", out var netProp)) host.NetworkInterfaces = netProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("notes", out var noteProp)) host.Notes = noteProp.GetString();
-            }
-            catch
-            {
-                return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
-            }
+                // десериализация через dto класс
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<HostDto>(data.GetRawText(), options);
 
-            host.EnterpriseId = enterpriseId;
+                if (dto == null)
+                {
+                    return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
+                }
+
+                var host = new Models.Host
+                {
+                    EnterpriseId = dto.EnterpriseId,
+                    Name = dto.Name,
+                    Ip = dto.Ip,
+                    Purpose = dto.Purpose,
+                    OsName = dto.OsName,
+                    OsVer = dto.OsVer,
+                    OsType = dto.OsType,
+                    NetworkInterfaces = dto.NetworkInterfaces,
+                    Notes = dto.Notes
+                };
+            
+
+            
 
             ModelState.Remove("host.Enterprise");
             ModelState.Remove("host.Services");
@@ -77,6 +85,12 @@ namespace EnterpriseSchema.Pages
             }
 
             return new JsonResult(new { success = true });
+
+            }
+            catch
+            {
+                return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
+            }
         }
 
         public async Task<IActionResult> OnPostDeleteHostAsync(int id)
@@ -127,16 +141,29 @@ namespace EnterpriseSchema.Pages
 
         public async Task<IActionResult> OnPostCreateAccessAsync([FromBody] JsonElement data)
         {
-            var access = new Access();
+            
             int hostId = 0;
 
             try
             {
-                if (data.TryGetProperty("hostId", out var hProp)) hostId = hProp.GetInt32();
-                if (data.TryGetProperty("accessTypeId", out var typeProp)) access.AccessTypeId = typeProp.GetInt32();
-                if (data.TryGetProperty("address", out var addrProp)) access.Address = addrProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("port", out var portProp)) access.Port = portProp.GetInt32();
-                if (data.TryGetProperty("login", out var logProp)) access.Login = logProp.GetString() ?? string.Empty;
+                // десериализация через dto класс
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<AccessDto>(data.GetRawText(), options);
+
+                if (dto == null)
+                {
+                    return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
+                }
+
+                var access = new Models.Access
+                {
+                    HostId = dto.HostId,
+                    AccessTypeId = dto.AccessTypeId,
+                    Address = dto.Address,
+                    Port = dto.Port,
+                    Login = dto.Login,
+                    Note = dto.Note
+                };
 
                 if (data.TryGetProperty("pass", out var passProp))
                 {
@@ -149,15 +176,10 @@ namespace EnterpriseSchema.Pages
 
                     access.Pass = CryptoHelper.Encrypt(rawPass);
                 }
+                
+            
 
-                if (data.TryGetProperty("note", out var noteProp)) access.Note = noteProp.GetString();
-            }
-            catch
-            {
-                return BadRequest(new { errors = new List<string> { "Некорректный формат данных доступа" } });
-            }
-
-            access.HostId = hostId;
+            
 
             ModelState.Remove("access.Host");
             ModelState.Remove("access.AccessType");
@@ -182,7 +204,7 @@ namespace EnterpriseSchema.Pages
                 {
                     parentEnterpriseId = relatedHost.EnterpriseId;
 
-                    relatedHost.UpdatedAt = DateTime.Now;
+                    relatedHost.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(relatedHost).State = EntityState.Modified;
                 }
 
@@ -201,7 +223,7 @@ namespace EnterpriseSchema.Pages
                     enterpriseIdToUpdate: parentEnterpriseId != 0 ? parentEnterpriseId : null
                 );
 
-                access.UpdatedAt = DateTime.Now;
+                access.UpdatedAtUtc = DateTime.UtcNow;
                 _context.Entry(access).State = EntityState.Modified;
 
                 await _context.SaveChangesAsync();
@@ -209,6 +231,12 @@ namespace EnterpriseSchema.Pages
 
 
             return new JsonResult(new { success = true });
+
+            }
+            catch
+            {
+                return BadRequest(new { errors = new List<string> { "Некорректный формат данных доступа" } });
+            }
         }
 
 
@@ -218,21 +246,33 @@ namespace EnterpriseSchema.Pages
 
         public async Task<IActionResult> OnPostUpdateHostAsync([FromBody] JsonElement data)
         {
-            var host = new Models.Host();
+            
             int id = 0;
             var servicesToCreate = new List<ServiceDict>();
 
             try
             {
-                if (data.TryGetProperty("id", out var idProp)) id = idProp.GetInt32();
-                if (data.TryGetProperty("name", out var nameProp)) host.Name = nameProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("ip", out var ipProp)) host.Ip = ipProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("purpose", out var purpProp)) host.Purpose = purpProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("osName", out var osNProp)) host.OsName = osNProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("osVer", out var osVProp)) host.OsVer = osVProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("osType", out var osTProp)) host.OsType = osTProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("networkInterfaces", out var netProp)) host.NetworkInterfaces = netProp.GetString() ?? string.Empty;
-                if (data.TryGetProperty("notes", out var noteProp)) host.Notes = noteProp.GetString();
+                // десериализация через dto класс
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<HostDto>(data.GetRawText(), options);
+
+                if (dto == null)
+                {
+                    return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
+                }
+
+                var host = new Models.Host
+                {
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    Ip = dto.Ip,
+                    Purpose = dto.Purpose,
+                    OsName = dto.OsName,
+                    OsVer = dto.OsVer,
+                    OsType = dto.OsType,
+                    NetworkInterfaces = dto.NetworkInterfaces,
+                    Notes = dto.Notes
+                };
 
                 if (data.TryGetProperty("newServices", out var srvsProp) && srvsProp.ValueKind == JsonValueKind.Array)
                 {
@@ -243,15 +283,11 @@ namespace EnterpriseSchema.Pages
                             Name = srvElement.GetProperty("name").GetString() ?? string.Empty,
                             Description = srvElement.GetProperty("description").GetString(),
                             Path = srvElement.GetProperty("path").GetString() ?? string.Empty,
-                            HostId = id
+                            HostId = host.Id
                         });
                     }
                 }
-            }
-            catch
-            {
-                return BadRequest(new { errors = new List<string> { "Некорректный формат данных транзакции" } });
-            }
+            
 
             ModelState.Remove("host.Enterprise");
             ModelState.Remove("host.Services");
@@ -267,7 +303,7 @@ namespace EnterpriseSchema.Pages
 
             if (_context.Hosts != null)
             {
-                var dbHost = await _context.Hosts.FindAsync(id);
+                var dbHost = await _context.Hosts.FindAsync(host.Id);
                 if (dbHost != null)
                 {
                     dbHost.Name = host.Name;
@@ -294,6 +330,12 @@ namespace EnterpriseSchema.Pages
             }
 
             return new JsonResult(new { success = true });
+
+            }
+            catch
+            {
+                return BadRequest(new { errors = new List<string> { "Некорректный формат данных транзакции" } });
+            }
         }
 
 
@@ -310,6 +352,8 @@ namespace EnterpriseSchema.Pages
                 if (data.TryGetProperty("description", out var dProp)) description = dProp.GetString() ?? string.Empty;
                 if (data.TryGetProperty("path", out var pProp)) path = pProp.GetString() ?? string.Empty;
                 if (data.TryGetProperty("hostId", out var hProp)) hostId = hProp.GetInt32();
+
+
             }
             catch
             {
@@ -390,7 +434,7 @@ namespace EnterpriseSchema.Pages
                         {
                             parentEnterpriseId = relatedHost.EnterpriseId;
 
-                            relatedHost.UpdatedAt = DateTime.Now;
+                            relatedHost.UpdatedAtUtc = DateTime.UtcNow;
                             _context.Entry(relatedHost).State = EntityState.Modified;
                         }
                     }
@@ -560,7 +604,7 @@ namespace EnterpriseSchema.Pages
 
         private async Task LogActionAsync(string entityType, int entityId, string actionType, string description, int? enterpriseIdToUpdate = null, int? hostIdToUpdate = null, int? accessIdToUpdate = null)
         {
-            var currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+            var currentUserName = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                                   ?? User.Identity?.Name
                                   ?? "Система / Аноним";
 
@@ -571,7 +615,7 @@ namespace EnterpriseSchema.Pages
                 EntityId = entityId,
                 ActionType = actionType,
                 Description = description,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow
             };
 
             await _context.AuditLogs.AddAsync(logEntry);
@@ -582,7 +626,7 @@ namespace EnterpriseSchema.Pages
                 var enterprise = await _context.Enterprises.FindAsync(enterpriseIdToUpdate.Value);
                 if (enterprise != null)
                 {
-                    enterprise.UpdatedAt = DateTime.Now;
+                    enterprise.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(enterprise).State = EntityState.Modified;
                 }
             }
@@ -591,7 +635,7 @@ namespace EnterpriseSchema.Pages
                 var host = await _context.Hosts.FindAsync(hostIdToUpdate.Value);
                 if (host != null)
                 {
-                    host.UpdatedAt = DateTime.Now;
+                    host.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(host).State = EntityState.Modified;
                 }
             }
@@ -600,7 +644,7 @@ namespace EnterpriseSchema.Pages
                 var access = await _context.Accesses.FindAsync(accessIdToUpdate.Value);
                 if (access != null)
                 {
-                    access.UpdatedAt = DateTime.Now;
+                    access.UpdatedAtUtc = DateTime.UtcNow;
                     _context.Entry(access).State = EntityState.Modified;
                 }
             }
@@ -610,4 +654,89 @@ namespace EnterpriseSchema.Pages
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public class HostDto
+    {
+        public int EnterpriseId { get; set; }
+
+
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+
+        public string Ip { get; set; } = string.Empty;
+        public string Purpose { get; set; } = string.Empty;
+        public string OsName { get; set; } = string.Empty;
+        public string OsVer { get; set; } = string.Empty;
+        public string OsType { get; set; } = string.Empty;
+        public string NetworkInterfaces { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+    }
+
+
+    public class AccessDto
+    {
+        public int HostId { get; set; }
+
+        public int AccessTypeId { get; set; }
+
+        public string Address { get; set; } = string.Empty;
+
+        public int Port { get; set; }
+
+        public string Login { get; set; } = string.Empty;
+        public string Note { get; set; } = string.Empty;
+
+    }
+
+
+
+    public class ServiceDto
+    {
+        public int HostId { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public string Description { get; set; } = string.Empty;
+        public string Path { get; set; } = string.Empty;
+        
+    }
+
+
+
+
+
+
 }

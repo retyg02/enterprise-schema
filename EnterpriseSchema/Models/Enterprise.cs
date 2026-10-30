@@ -25,10 +25,13 @@ public class Enterprise
 
     [StringLength(500, ErrorMessage = "Примечание не может быть длиннее 500 символов")]
     public string? Note { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    // сделал utc время
+    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+
+    // сделал utc время
     [Required]
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 
 
 

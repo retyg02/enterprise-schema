@@ -1,61 +1,116 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
-namespace EnterpriseSchema.Data;
-
-public static class CryptoHelper
+namespace EnterpriseSchema.Data
 {
-    public static string EncryptionKey { get; set; } = string.Empty;
-
-    public static string Encrypt(string Text)
+    public static class CryptoHelper
     {
-        if (string.IsNullOrEmpty(Text)) return string.Empty;
+        // теперь private
+        private static byte[]? encryptionKey;
 
-        byte[] iv = new byte[16];
-        byte[] array;
+        // тоже нельзя подменить и заново вызвать сетер ключа 
+        public static bool _isInitialized { get; private set; } = false;
+        private static readonly object lock_lock = new object();
 
-        using Aes aes = Aes.Create();
-        
-            aes.Key = Encoding.UTF8.GetBytes(EncryptionKey.PadRight(32)[..32]);
-            aes.IV = iv;
+        public static void SetEncryptionKey(string key)
+        {
+            lock (lock_lock)
+            {
+                if (_isInitialized)
+                {
+                    throw new InvalidOperationException("Попытка перезаписать ключ");
+                }
 
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    throw new ArgumentException("Пустой ключ шифрования");
+                }
 
-            using MemoryStream memoryStream = new();            
-                using CryptoStream cryptoStream = new(memoryStream, encryptor, CryptoStreamMode.Write);                
-                    using (StreamWriter streamWriter = new(cryptoStream))
+                encryptionKey = Encoding.UTF8.GetBytes(key.PadRight(32)[..32]);
+                _isInitialized = true;
+            }
+        }
+
+        public static string Encrypt(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+
+            if (!_isInitialized || encryptionKey == null)
+            {
+                throw new InvalidOperationException("EncryptionKey еще не инициализирован");
+            }
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = encryptionKey;
+                // теперь в aes.IV не присваиваю массив нулей
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    memoryStream.Write(aes.IV, 0, aes.IV.Length);
+
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                     {
-                        streamWriter.Write(Text);
+                        using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
+                        {
+                            streamWriter.Write(text);
+                        }
                     }
-                    array = memoryStream.ToArray();
-                
-            
-        
 
-        return Convert.ToBase64String(array);
-    }
+                    byte[] array = memoryStream.ToArray();
+                    return Convert.ToBase64String(array);
+                }
+            }
+        }
 
-    public static string Decrypt(string Text)
-    {
-        if (string.IsNullOrEmpty(Text)) return string.Empty;
+        public static string Decrypt(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
 
-        byte[] iv = new byte[16];
-        byte[] array = Text.Contains(' ') ? Convert.FromBase64String(Text.Replace(' ', '+')) : Convert.FromBase64String(Text);
+            if (!_isInitialized || encryptionKey == null)
+            {
+                throw new InvalidOperationException("EncryptionKey еще не инициализирован");
+            }
 
-        using Aes aes = Aes.Create();
-        
-            aes.Key = Encoding.UTF8.GetBytes(EncryptionKey.PadRight(32)[..32]);
-            aes.IV = iv;
+            try
+            {
+                byte[] full_text = Convert.FromBase64String(text);
 
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = encryptionKey;
 
-            using MemoryStream memoryStream = new(array);
-                using CryptoStream cryptoStream = new(memoryStream, decryptor, CryptoStreamMode.Read);
-                    using StreamReader streamReader = new(cryptoStream);                    
-                        return streamReader.ReadToEnd();
-                    
-                
-            
-        
+                    // массив из 16 рандомных байт
+                    byte[] iv = new byte[16];
+                    byte[] text_bytes = new byte[full_text.Length - 16];
+
+                    Buffer.BlockCopy(full_text, 0, iv, 0, 16);
+                    Buffer.BlockCopy(full_text, 16, text_bytes, 0, text_bytes.Length);
+
+                    aes.IV = iv;
+
+                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                    using (MemoryStream memoryStream = new MemoryStream(text_bytes))
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (StreamReader streamReader = new StreamReader(cryptoStream))
+                            {
+                                return streamReader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
     }
 }
