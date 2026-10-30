@@ -1,0 +1,203 @@
+﻿@page "/Logs"
+@model EnterpriseSchema.Pages.LogsModel
+@{
+    ViewData["Title"] = "Журнал изменений";
+}
+
+
+
+
+
+
+<div class="space-y-5 select-none transition-colors duration-200">
+
+    <div class="space-y-1">
+        <div class="flex items-center space-x-3">
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Журнал изменений
+            </h1>
+            <span id="universal-counter-badge"
+                  class="inline-flex items-center justify-center px-2.5 py-1 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-100 dark:border-indigo-900/20">
+                @Model.AuditLogs.Count
+            </span>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+            Список всех манипуляций над всеми сущностями
+        </p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm w-full">
+        <div class="relative flex-grow w-full">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                </svg>
+            </div>
+
+            <input type="text"
+                   id="universal-search-input"
+                   placeholder="Быстрый поиск по журналу..."
+                   class="w-full pl-9 pr-12 py-2 bg-slate-50 focus:bg-white dark:bg-slate-950 dark:focus:bg-slate-950 border border-slate-200 focus:border-indigo-500 dark:border-slate-800 dark:focus:border-indigo-500 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all" />
+
+            <div id="universal-kbd-shortcut" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none transition-opacity duration-150">
+                <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-medium bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-800 rounded shadow-sm">
+                    Ctrl + K
+                </kbd>
+            </div>
+
+            <button type="button"
+                    id="universal-search-clear"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hidden">
+                <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="mb-4"></div>
+
+
+
+
+
+
+
+
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden select-none transition-colors duration-200">
+
+    <div id="logs-desktop-header" class="hidden md:grid grid-cols-12 gap-4 bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 font-bold text-xs border-b border-slate-100 dark:border-slate-800 uppercase tracking-wider px-6 py-3.5">
+        <div class="col-span-2">Юзер</div>
+        <div class="col-span-3">Сущность</div>
+        <div class="col-span-2 flex items-center">
+            <button type="button"
+                    id="logs-sort-action"
+                    class="js-btn-sort flex items-center space-x-1 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none transition-colors"
+                    data-sort-field="action">
+                <span>Операция</span>
+                <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 transition-all duration-200 sort-arrow-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75" />
+                </svg>
+            </button>
+        </div>
+        <div class="col-span-3">Описание</div>
+        <div class="col-span-2 flex items-center justify-end">
+            <button type="button"
+                    id="logs-sort-time"
+                    class="js-btn-sort flex items-center space-x-1 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none transition-colors ml-auto"
+                    data-sort-field="time">
+                <span>Время</span>
+                <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 transition-all duration-200 sort-arrow-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="logs-main-container" class="p-3 md:p-0 space-y-3 md:space-y-0 md:divide-y md:divide-slate-100 md:dark:divide-slate-800/60 bg-white dark:bg-slate-900">
+        @foreach (var log in Model.AuditLogs)
+        {
+            <div data-action="@log.ActionType"
+                 data-timestamp="@log.Timestamp.ToString("yyyyMMddHHmmssfff")"
+                class="logs-row flex flex-col md:grid md:grid-cols-12 gap-2.5 md:gap-4 px-4 py-4 md:px-6 md:py-4 bg-slate-50/50 dark:bg-slate-900/30 md:bg-transparent md:dark:bg-transparent rounded-xl md:rounded-none border border-slate-100 dark:border-slate-800/80 md:border-none dark:hover:bg-slate-900/60 md:dark:hover:bg-slate-900/40 transition-all text-sm items-start md:items-center">
+
+                <div class="w-full md:col-span-2 flex items-center">
+                    <span class="md:hidden text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24 flex-shrink-0">Юзер:</span>
+                    <div class="flex items-center space-x-2 truncate">
+                        <div class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[9px] text-slate-600 dark:text-slate-400 font-bold uppercase flex-shrink-0">
+                            @(log.UserId.Length > 2 ? log.UserId.Substring(0, 2) : "AD")
+                        </div>
+                        <span class="log-field-user log-field-user font-medium text-slate-900 dark:text-white truncate">@log.UserId</span>
+                    </div>
+                </div>
+
+                <div class="w-full md:col-span-3 flex items-center">
+                    <span class="md:hidden text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24 flex-shrink-0">Сущность:</span>
+                    <span data-copy-green class="log-field-entity font-semibold text-xs text-slate-900 dark:text-white truncate" title="@log.EntityRealName">
+                        @log.EntityRealName
+                    </span>
+                    <span class="relative left-[5px] text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">( @log.EntityType )</span>
+                </div>
+
+                <div class="w-full md:col-span-2 flex items-center">
+                    <span class="md:hidden text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24 flex-shrink-0">Операция:</span>
+                    <div>
+                        @if (log.ActionType == "Create")
+                        {
+                            <span class="log-field-action inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20">
+                                Создание
+                            </span>
+                        }
+                        else if (log.ActionType == "Update")
+                        {
+                            <span class="log-field-action inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/20">
+                                Изменение
+                            </span>
+                        }
+                        else if (log.ActionType == "Delete")
+                        {
+                            <span class="log-field-action inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/20">
+                                Удаление
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="log-field-action inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                @log.ActionType
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="w-full md:col-span-3 flex items-center">
+                    <span class="md:hidden text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24 flex-shrink-0">Описание:</span>
+                    <span data-copy-green class="log-field-description text-slate-600 dark:text-slate-400 break-words">@log.Description</span>
+                </div>
+
+                <div class="w-full md:col-span-2 flex items-center md:justify-end text-xs text-slate-400 dark:text-slate-500 font-mono">
+                    <span class="md:hidden text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24 flex-shrink-0">Время:</span>
+                    <span data-copy-green>@log.Timestamp.ToString("dd.MM.yyyy HH:mm:ss")</span>
+                </div>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+
+
+<div id="logs-no-results" class="hidden flex-col items-center justify-center py-12 text-center select-none transition-colors duration-200">
+    <div class="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-950 text-slate-400 flex items-center justify-center mb-3 animate-bounce">
+        <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+        </svg>
+    </div>
+    <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-1">Ничего не найдено</h3>
+    <p class="text-xs text-slate-400 dark:text-slate-500 max-w-xs px-4">
+        Попробуйте изменить поисковый запрос или проверить ключевые слова.
+    </p>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/js/logs.js" asp-append-version="true"></script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
