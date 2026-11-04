@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using EnterpriseSchema.Data;
 using EnterpriseSchema.Models;
+using System.Diagnostics;
 
 namespace EnterpriseSchema.Pages
 {
@@ -38,7 +39,7 @@ namespace EnterpriseSchema.Pages
         {
             if (_context.Accesses == null) return BadRequest();
 
-            IQueryable<EnterpriseSchema.Models.Access> query = _context.Accesses.AsNoTracking()
+            IQueryable<Access> query = _context.Accesses.AsNoTracking()
                 .Include(a => a.AccessType)
                 .Include(a => a.Host)
                     .ThenInclude(h => h.Enterprise);
@@ -74,13 +75,15 @@ namespace EnterpriseSchema.Pages
                     address = a.Address,
                     port = a.Port,
                     login = a.Login,
-                    pass = a.Pass,
+                    pass = a.Pass != null ? Data.CryptoHelper.Decrypt(a.Pass) : string.Empty,
                     note = a.Note,
                     timestamp = a.UpdatedAtUtc.ToString("dd.MM.yyyy HH:mm")
                 })
                 .ToListAsync();
 
 
+            
+            
             return new JsonResult(nextAccesses);
 
         }

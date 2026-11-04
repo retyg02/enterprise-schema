@@ -438,7 +438,7 @@ function syncAccessesData(loader) {
                     passSpan.setAttribute("data-raw-password", item.pass);
                     passSpan.classList.remove("bg-emerald-500", "text-white");
                 }
-
+                console.log(item);
                 const togglePassBtn = clone.querySelector(".js_btn_toggle_password") || clone.querySelector(".btn-toggle-password");
                 if (togglePassBtn) {
                     const openEye = togglePassBtn.querySelector(".icon-eye-open");

@@ -107,8 +107,9 @@ namespace EnterpriseSchema.Data
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
+                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!1 " + e);
                 return string.Empty;
             }
         }
