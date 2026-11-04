@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const firstRow = document.querySelector("#logs-table-body > div") || document.querySelector(".contact-row");
     if (firstRow) {
         contactTemplateNode = firstRow.cloneNode(true);
-    
+    }
 
     initContactsInfiniteScroll();
 });
