@@ -2358,3 +2358,194 @@ body.dark-mode [id^="enterprise-card-"] {
     body.dark-mode [id^="enterprise-card-"]:hover {
         background-color: #111827 !important; 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body::-webkit-scrollbar,
+#enterprise-audit-sidebar::-webkit-scrollbar {
+    width: 6px; 
+    height: 6px; 
+}
+
+body::-webkit-scrollbar-track,
+#enterprise-audit-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body::-webkit-scrollbar-thumb,
+#enterprise-audit-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.3); 
+    border-radius: 20px; 
+    border: 1px solid transparent; 
+}
+
+    body::-webkit-scrollbar-thumb:hover,
+    #enterprise-audit-sidebar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(156, 163, 175, 0.5);
+    }
+
+body.dark-mode::-webkit-scrollbar-thumb,
+body.dark-mode #enterprise-audit-sidebar::-webkit-scrollbar-thumb,
+.dark body::-webkit-scrollbar-thumb,
+.dark #enterprise-audit-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.2); 
+}
+
+    body.dark-mode::-webkit-scrollbar-thumb:hover,
+    .dark body::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(148, 163, 184, 0.4);
+    }
+
+@supports (scrollbar-width: thin) {
+    body, #enterprise-audit-sidebar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+html, body, button, input, select, textarea, span, div, p, h1, h2, h3 {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    -webkit-font-smoothing: antialiased; 
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em !important; 
+}
+
+.font-mono, code, .password-value, [data-copy-target] {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace !important;
+    letter-spacing: 0em !important; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.view-card-item,
+.enterprise-list-item-wrapper,
+button,
+a {
+    transition: all 0.15s ease-in-out !important;
+}
+
+    
+    .view-card-item:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.3) !important;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#universal-search-input:focus, #search-input:focus {
+    border-color: none !important; 
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important; 
+    outline: none !important;
+}
