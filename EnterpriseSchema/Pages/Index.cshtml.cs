@@ -359,7 +359,7 @@ namespace EnterpriseSchema.Pages
                             typeName = a.AccessType != null ? a.AccessType.Name : "Доступ",
                             socket = a.Port != 0 ? $"{a.Address}:{a.Port}" : a.Address,
                             login = a.Login,
-                            passEncrypted = a.Pass,
+                            passEncrypted = a.Pass != null ? CryptoHelper.Decrypt(a.Pass) : string.Empty,
                             files = _context.AccessFiles.AsNoTracking()
                                 .Where(f => f.AccessId == a.Id)
                                 .Select(f => new

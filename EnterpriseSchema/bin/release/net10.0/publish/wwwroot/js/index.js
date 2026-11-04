@@ -1884,8 +1884,14 @@ function syncData(loader) {
 
                                         accRow.className = "sidebar-access-item bg-slate-50 dark:bg-slate-900 rounded-lg p-2 text-[11px] border border-slate-100 dark:border-slate-800 space-y-1";
 
+                                        let decodedPass = acc.passEncrypted || "";
+                try {
+                    decodedPass = decodeURIComponent(decodedPass);
+                } catch (e) {
+                    console.warn("Ошибка:", e);
+                }
+
                                         accRow.innerHTML = `
-                            <!-- Верхняя строка: Тип доступа и Сокет -->
                             <div class="flex items-center justify-between">
                                 <span class="font-bold text-indigo-600 dark:text-indigo-400 uppercase text-[10px]">${acc.typeName}</span>
                                 <span data-copy-target="${acc.socket}" class="js-clickable-copy font-mono text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded px-1 transition-all duration-200 cursor-pointer" title="Скопировать сокет">
@@ -1893,7 +1899,6 @@ function syncData(loader) {
                                 </span>
                             </div>
                             
-                            <!-- Средняя строка: Логин пользователя -->
                             <div class="flex items-center justify-between text-slate-600 dark:text-slate-400 font-mono text-[10px] access-crypto-block">
                                 <span>логин:</span>
                                 <span data-copy-target="${acc.login}" class="js-clickable-copy text-slate-800 dark:text-slate-200 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 rounded px-1 transition-all duration-200 cursor-pointer">
@@ -1901,12 +1906,10 @@ function syncData(loader) {
                                 </span>
                             </div>
                             
-                            <!-- Нижняя строка: Пароль и Кнопка-глазик (ДОБАВИЛИ КЛАСС access-crypto-block ДЛЯ СИНХРОНИЗАЦИИ) -->
                             <div class="flex items-center justify-between text-slate-600 dark:text-slate-400 font-mono text-[10px] access-crypto-block">
                                 <span>пароль:</span>
                                 <div class="flex items-center space-x-1">
-                                    <!-- Атрибуты data-copy-target и data-real-password всегда держат чистый пароль для копирования в любом состоянии -->
-                                    <span data-copy-target="${acc.passEncrypted}" data-data-copy-target="${acc.passEncrypted}" data-real-password="${acc.passEncrypted}" data-data-real-password="${acc.passEncrypted}" data-hidden="true" data-data-hidden="true" class="js-clickable-copy password-value text-slate-800 dark:text-slate-200 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 rounded px-1 transition-all duration-200 cursor-pointer">
+                                    <span data-copy-target="${decodedPass}" data-real-password="${decodedPass}" data-hidden="true" class="js-clickable-copy password-value text-slate-800 dark:text-slate-200 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 rounded px-1 transition-all duration-200 cursor-pointer">
                                         ••••••••
                                     </span>
                                     <button type="button" class="btn-toggle-password p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none transition-colors duration-200" title="Показать/скрыть пароль">
@@ -1918,7 +1921,6 @@ function syncData(loader) {
                                 </div>
                             </div>
                             
-                            <!-- Контейнер файлов -->
                             <div class="sidebar-files-container flex flex-wrap gap-1.5 mt-2 pt-1.5 border-t border-dashed border-slate-200 dark:border-slate-700"></div>
                         `;
 
