@@ -7,13 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
 
 namespace EnterpriseSchema.Pages
 {

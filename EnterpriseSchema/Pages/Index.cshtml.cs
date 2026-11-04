@@ -188,72 +188,64 @@ namespace EnterpriseSchema.Pages
 
 
 
+        private const int PageSize = 20;
+
+        public int TotalEnterprisesCount { get; set; }
+
+
         private async Task<bool> LoadPageDataAsync(string? searchString = null)
         {
             if (_context.Enterprises == null) return false;
 
+            TotalEnterprisesCount = await _context.Enterprises.CountAsync();
+
+
+            IQueryable<Enterprise> query = _context.Enterprises
+                .AsNoTracking()
+                .Include(e => e.City)
+                .Include(e => e.Hosts)
+                    .ThenInclude(h => h.Accesses)
+                        .ThenInclude(a => a.AccessType);
+
             if (!string.IsNullOrWhiteSpace(searchString))
             {
                 string search = searchString.Trim().ToLower();
+                query = query.Where(e => e.Name.ToLower().Contains(search)
+                                      || e.Hosts.Any(h => h.Name.ToLower().Contains(search) || h.Ip.Contains(search)));
+            }
 
-                Enterprises = await _context.Enterprises
-                    .Include(e => e.City)
-                    .Include(e => e.Hosts)
-                        .ThenInclude(h => h.Accesses)
-                            .Where(e => e.Name.ToLower().Contains(search) || e.Hosts.Any(h => h.Name.ToLower().Contains(search) || h.Ip.Contains(search)))
-                    .Include(e => e.Hosts)
-                        .ThenInclude(h => h.Accesses)
-                            .ThenInclude(a => a.AttachedFiles)
-                    .ToListAsync();
-            }
-            else
-            {
-                Enterprises = await _context.Enterprises
-                    .Include(e => e.City)
-                    .Include(e => e.Hosts)
-                    .Include(e => e.Hosts)
-                        .ThenInclude(h => h.Accesses)
-                            .ThenInclude(a => a.AttachedFiles)
-                    .ToListAsync();
-            }
+            Enterprises = await query
+                .OrderBy(e => e.Name)
+                .Take(PageSize)
+                .ToListAsync();
 
             if (_context.CityDictionaries != null)
             {
-                var cities = await _context.CityDictionaries.OrderBy(c => c.Name).ToListAsync();
+                var cities = await _context.CityDictionaries.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
                 CityList = new SelectList(cities, "Id", "Name");
             }
 
-
-            
-
-
             if (_context.Accesses != null)
             {
-                Accesses = await _context.Accesses
-                    .Include(a => a.AccessType)
-                    .ToListAsync();
+                Accesses = await _context.Accesses.AsNoTracking().Include(a => a.AccessType).ToListAsync();
             }
+
             if (_context.Hosts != null)
             {
-                HostsModel = await _context.Hosts
-                    .ToListAsync();
+                HostsModel = await _context.Hosts.AsNoTracking().ToListAsync();
             }
 
-
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 UserFavoriteEnterpriseIds = new List<int>();
-                return false;
+                return true; 
             }
-
-
-
 
             if (userId > 0)
             {
                 UserFavoriteEnterpriseIds = await _context.UserFavorites
+                    .AsNoTracking()
                     .Where(f => f.UserId == userId)
                     .Select(f => f.EnterpriseId)
                     .ToListAsync();
@@ -265,6 +257,125 @@ namespace EnterpriseSchema.Pages
 
             return true;
         }
+
+            public async Task<IActionResult> OnGetLoadMoreAsync(int offset, string searchString, int? cityId, bool isFavoriteOnly, string sortField, string sortOrder)
+    {
+        if (_context.Enterprises == null) return BadRequest();
+
+        IQueryable<Enterprise> query = _context.Enterprises.AsNoTracking()
+            .Include(e => e.City)
+            .Include(e => e.Hosts);
+
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            string search = searchString.Trim().ToLower();
+            query = query.Where(e => 
+                (e.Name != null && e.Name.ToLower().Contains(search)) ||
+                e.Hosts.Any(h => (h.Name != null && h.Name.ToLower().Contains(search)) || (h.Ip != null && h.Ip.Contains(search)))
+            );
+        }
+
+        if (cityId.HasValue && cityId.Value > 0)
+        {
+            query = query.Where(e => e.CityId == cityId.Value);
+        }
+
+        var favoriteIds = new List<int>();
+        var useridClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        
+        if (int.TryParse(useridClaim, out int userid))
+        {
+            favoriteIds = await _context.UserFavorites.AsNoTracking()
+                .Where(f => f.UserId == userid)
+                .Select(f => f.EnterpriseId)
+                .ToListAsync();
+        }
+
+        if (isFavoriteOnly)
+        {
+            if (!int.TryParse(useridClaim, out _))
+            {
+                return new JsonResult(new List<object>());
+            }
+            query = query.Where(e => favoriteIds.Contains(e.Id));
+        }
+
+
+
+
+
+
+
+
+
+
+            bool isDesc = !string.IsNullOrWhiteSpace(sortOrder) && sortOrder.ToLower() == "desc";
+
+            if (!string.IsNullOrWhiteSpace(sortField) && sortField.ToLower() == "date")
+            {
+                query = isDesc ? query.OrderByDescending(e => e.UpdatedAtUtc) : query.OrderBy(e => e.UpdatedAtUtc);
+            }
+            else
+            {
+                query = isDesc ? query.OrderByDescending(e => e.Name) : query.OrderBy(e => e.Name);
+            }
+
+
+
+
+
+            var paginatedEnterprises = await query
+            
+            .Skip(offset)
+            .Take(PageSize)
+            .Select(e => new
+            {
+                id = e.Id,
+                name = e.Name,
+                cityId = e.CityId,
+                cityName = e.City != null ? e.City.Name : "Город не указан",
+                contactUser = e.Contact,
+                contactPhone = e.ContactPhone,
+                note = e.Note,
+                updatedAt = e.UpdatedAtUtc.ToString("dd.MM.yyyy HH:mm"),
+                isFavorite = favoriteIds.Contains(e.Id),
+                hostsCount = e.Hosts.Count,
+                hostsPreview = e.Hosts.OrderBy(h => h.Name).Take(20).Select(h => h.Name).ToList(),
+                
+                hostsFull = e.Hosts.OrderBy(h => h.Name).Select(h => new
+                {
+                    id = h.Id,
+                    name = h.Name,
+                    ip = h.Ip,
+                    osName = !string.IsNullOrWhiteSpace(h.OsName) ? h.OsName : "Linux",
+                    osVer = !string.IsNullOrWhiteSpace(h.OsVer) ? h.OsVer : "N/A",
+                    osType = !string.IsNullOrWhiteSpace(h.OsType) ? h.OsType : "64",
+                    purpose = !string.IsNullOrWhiteSpace(h.Purpose) ? h.Purpose : "Общее",
+                    accesses = _context.Accesses.AsNoTracking()
+                        .Where(a => a.HostId == h.Id)
+                        .Select(a => new
+                        {
+                            id = a.Id,
+                            typeName = a.AccessType != null ? a.AccessType.Name : "Доступ",
+                            socket = a.Port != 0 ? $"{a.Address}:{a.Port}" : a.Address,
+                            login = a.Login,
+                            passEncrypted = a.Pass,
+                            files = _context.AccessFiles.AsNoTracking()
+                                .Where(f => f.AccessId == a.Id)
+                                .Select(f => new
+                                {
+                                    fileName = f.FileName,
+                                    storedName = f.StoredFileName
+                                }).ToList()
+                        }).ToList()
+                }).ToList()
+            })
+            .ToListAsync();
+
+        return new JsonResult(paginatedEnterprises);
+    }
+
+
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
@@ -338,7 +449,7 @@ namespace EnterpriseSchema.Pages
                     return BadRequest(new { errors = new List<string> { "Некорректный формат переданных данных" } });
                 }
 
-                var enterprise = new Models.Enterprise
+                var enterprise = new Enterprise
                 {
 
                     Id = dto.Id,

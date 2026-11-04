@@ -1,9 +1,12 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+﻿const searchInput = document.getElementById("universal-search-input");
+
+
+document.addEventListener("DOMContentLoaded", () => {
 
     const searchInput = document.getElementById("universal-search-input");
     const kbdShortcut = document.getElementById("universal-kbd-shortcut");
     const tableContainer = document.getElementById("logs-main-container");
-    const counterBadge = document.getElementById("universal-counter-badge");
+    
     const noResultsBlock = document.getElementById("logs-no-results");
 
 
@@ -34,53 +37,37 @@
         searchInput.addEventListener("blur", updateSearchUI);
         searchInput.addEventListener("input", () => {
             updateSearchUI();
-            applyAccessesFilter(); 
+            //applyLiveFilter(); 
         });
     }
 
-    function applyAccessesFilter() {
-        if (!searchInput || allRows.length === 0) return;
 
-        const searchText = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
 
-        allRows.forEach(row => {
-            const typeText = row.querySelector(".log-field-action")?.textContent.toLowerCase() || "";
-            const socketText = row.querySelector(".log-field-phone")?.textContent.toLowerCase() || "";
-            const userText = row.querySelector(".log-field-user")?.textContent.toLowerCase() || "";
-            const descText = row.querySelector(".log-field-description")?.textContent.toLowerCase() || "";
 
-            const enterpriseText = row.querySelector(".log-field-enterprise")?.textContent.toLowerCase() || "";
 
-            const matchesSearch =
-                typeText.includes(searchText) ||
-                socketText.includes(searchText) ||
-                userText.includes(searchText) ||
-                descText.includes(searchText) ||
-                enterpriseText.includes(searchText);
 
-            if (matchesSearch) {
-                row.style.setProperty("display", "", "important"); 
-                visibleCount++;
-            } else {
-                row.style.setProperty("display", "none", "important"); 
-            }
-        });
 
-        if (counterBadge) {
-            counterBadge.textContent = visibleCount;
-        }
 
-        if (noResultsBlock) {
-            if (visibleCount === 0) {
-                noResultsBlock.classList.remove("hidden");
-                noResultsBlock.classList.add("flex");
-            } else {
-                noResultsBlock.classList.remove("flex");
-                noResultsBlock.classList.add("hidden");
-            }
-        }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
 
     updateSearchUI();
 });
@@ -324,4 +311,207 @@ async function submitDeleteAccess(event, id, name) {
         
         if (card) card.classList.remove('blur-[2px]', 'opacity-60', 'pointer-events-none');
     }
+}
+
+
+
+
+//////////////////////////////////////////////////////////////////// lazyloading
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const pageState = {
+    searchString: "",
+    offset: 20, 
+    limit: 20,
+    isLoading: false,
+    hasMoreData: true
+};
+
+let cardTemplateNode = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const firstRow = document.querySelector("#logs-table-body > div") || document.querySelector("[data-access-id]");
+    if (firstRow) {
+        cardTemplateNode = firstRow.cloneNode(true);
+    } 
+    initAccessesInfiniteScroll();
+});
+
+function initAccessesInfiniteScroll() {
+    const anchor = document.getElementById("scroll-anchor");
+    const loader = document.getElementById("scroll-loader");
+
+    if (!anchor || !loader) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !pageState.isLoading && pageState.hasMoreData) {
+                syncAccessesData(loader);
+            }
+        });
+    }, {
+        rootMargin: "0px 0px 200px 0px"
+    });
+
+    observer.observe(anchor);
+}
+
+function syncAccessesData(loader) {
+    if (pageState.isLoading || !pageState.hasMoreData) return;
+
+    pageState.isLoading = true;
+
+    if (loader) {
+        loader.classList.remove("hidden");
+        loader.textContent = "⏳ Загрузка доступов...";
+    }
+
+
+    fetch(`?handler=LoadMore&offset=${pageState.offset}&searchString=${encodeURIComponent(pageState.searchString)}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`Ошибка сети: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+
+            const container = document.getElementById("logs-table-body");
+            if (!container || !cardTemplateNode) return;
+
+            if (!data || data.length === 0) {
+                pageState.hasMoreData = false;
+                if (loader) loader.textContent = "Все доступы загружены";
+
+                const counterBadge = document.getElementById("universal-counter-badge");
+                if (counterBadge) {
+                    counterBadge.textContent = container.children.length;
+                }
+                return;
+            }
+
+            data.forEach(item => {
+                const clone = cardTemplateNode.cloneNode(true);
+
+                clone.setAttribute("id", `access_card_${item.id}`);
+                clone.setAttribute("data-access-id", item.id);
+
+                const hiddenEnterprise = clone.querySelector(".log-field-enterprise");
+                if (hiddenEnterprise) hiddenEnterprise.textContent = item.enterpriseName;
+
+                const deleteBtn = clone.querySelector("button[onclick*='submitDeleteAccess']");
+                if (deleteBtn) {
+                    deleteBtn.setAttribute("onclick", `submitDeleteAccess(event, ${item.id}, '${item.accessTypeName}')`);
+                }
+
+                const actionField = clone.querySelector(".log-field_action") || clone.querySelector(".log-field-action");
+                if (actionField) actionField.textContent = item.accessTypeName;
+
+                const phoneField = clone.querySelector(".log-field-phone");
+                if (phoneField) {
+                    phoneField.textContent = item.port && item.port !== 0 ? `${item.address}:${item.port}` : item.address;
+                }
+
+                const userField = clone.querySelector(".log-field-user");
+                if (userField) userField.textContent = item.login;
+
+                const passSpan = clone.querySelector(".js-password-text");
+                if (passSpan) {
+                    passSpan.textContent = "••••••••";
+                    passSpan.setAttribute("data-raw-password", item.pass);
+                    passSpan.classList.remove("bg-emerald-500", "text-white");
+                }
+
+                const togglePassBtn = clone.querySelector(".js_btn_toggle_password") || clone.querySelector(".btn-toggle-password");
+                if (togglePassBtn) {
+                    const openEye = togglePassBtn.querySelector(".icon-eye-open");
+                    const closedEye = togglePassBtn.querySelector(".icon_eye_closed") || togglePassBtn.querySelector(".icon-eye-closed");
+                    if (openEye) openEye.classList.remove("hidden");
+                    if (closedEye) closedEye.classList.add("hidden");
+                }
+
+                const descField = clone.querySelector(".log-field-description");
+                if (descField) {
+                    descField.textContent = item.note || "—";
+                    descField.setAttribute("title", item.note || "");
+                }
+
+                const entLink = clone.querySelector(".js-enterprise-link");
+                if (entLink) {
+                    entLink.href = `/EnterpriseDetails?id=${item.enterpriseId}`;
+                    entLink.textContent = item.enterpriseName;
+                }
+
+                container.appendChild(clone);
+            });
+
+            pageState.offset += data.length;
+
+            if (data.length < pageState.limit) {
+                pageState.hasMoreData = false;
+                if (loader) loader.textContent = "Все доступы загружены";
+            }
+
+            const counterBadge = document.getElementById("universal-counter-badge");
+            if (counterBadge) {
+                counterBadge.textContent = container.children.length;
+            }
+        })
+        .catch(error => {
+            if (loader) loader.textContent = "❌ Ошибка загрузки";
+        })
+        .finally(() => {
+            pageState.isLoading = false;
+        });
+}
+
+function applyLiveFilter() {
+    const container = document.getElementById("logs-table-body");
+    const loader = document.getElementById("scroll-loader");
+    const searchInput = document.getElementById("universal-search-input");
+
+    if (!container) return;
+
+    pageState.searchString = searchInput ? searchInput.value.trim() : "";
+
+    container.innerHTML = "";
+    pageState.offset = 0;
+    pageState.hasMoreData = true;
+    pageState.isLoading = false;
+
+    syncAccessesData(loader);
+}
+
+function createDebounceHandler(callback, delay = 400) {
+    let timeoutId = null;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => callback(...args), delay);
+    };
+}
+
+const handleSearchInput = createDebounceHandler(() => {
+    applyLiveFilter();
+});
+
+const globalSearchInput = document.getElementById("universal-search-input");
+if (globalSearchInput) {
+    globalSearchInput.addEventListener("input", handleSearchInput);
 }

@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 200);
 
         }).catch(err => {
-            console.error('Критический сбой работы универсального буфера обмена:', err);
+            console.error('сбой:', err);
         });
     });
 });

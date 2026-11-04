@@ -1,6 +1,8 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+﻿const searchInput = document.getElementById("universal-search-input");
 
-    const searchInput = document.getElementById("universal-search-input");
+document.addEventListener("DOMContentLoaded", () => {
+
+    
     const kbdShortcut = document.getElementById("universal-kbd-shortcut");
     const tableContainer = document.getElementById("logs-main-container");
     const counterBadge = document.getElementById("universal-counter-badge");
@@ -34,60 +36,11 @@
         searchInput.addEventListener("blur", updateSearchUI);
         searchInput.addEventListener("input", () => {
             updateSearchUI();
-            applyHostsFilter();
+            //applyHostsFilter();
         });
     }
 
-    function applyHostsFilter() {
-        if (!searchInput || allRows.length === 0) return;
-
-        const searchText = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
-
-        allRows.forEach(row => {
-            const serverName = row.querySelector(".log-field-user")?.textContent.toLowerCase() || "";
-            const serverPurpose = row.querySelector(".log-field-purpose")?.textContent.toLowerCase() || "";
-            const serverIp = row.querySelector(".log-field-phone")?.textContent.toLowerCase() || "";
-
-            const osName = row.querySelector(".log-field-os-name")?.textContent.toLowerCase() || "";
-            const osVer = row.querySelector(".log-field-os-ver")?.textContent.toLowerCase() || "";
-            const osType = row.querySelector(".log-field-os-type")?.textContent.toLowerCase() || "";
-
-            const serverNote = row.querySelector(".log-field-description")?.textContent.toLowerCase() || "";
-            const enterpriseName = row.querySelector(".log-field-entity")?.textContent.toLowerCase() || "";
-
-            const matchesSearch =
-                serverName.includes(searchText) ||
-                serverPurpose.includes(searchText) ||
-                serverIp.includes(searchText) ||
-                osName.includes(searchText) ||
-                osVer.includes(searchText) ||
-                osType.includes(searchText) ||
-                serverNote.includes(searchText) ||
-                enterpriseName.includes(searchText);
-
-            if (matchesSearch) {
-                row.style.setProperty("display", "", "important"); 
-                visibleCount++;
-            } else {
-                row.style.setProperty("display", "none", "important"); 
-            }
-        });
-
-        if (counterBadge) {
-            counterBadge.textContent = visibleCount;
-        }
-
-        if (noResultsBlock) {
-            if (visibleCount === 0) {
-                noResultsBlock.classList.remove("hidden");
-                noResultsBlock.classList.add("flex");
-            } else {
-                noResultsBlock.classList.remove("flex");
-                noResultsBlock.classList.add("hidden");
-            }
-        }
-    }
+    
 
     updateSearchUI();
 });
@@ -150,7 +103,6 @@ function sortHosts(field) {
 
     if (currentHostSortDir === "none" || currentHostSortField === "none") {
         sortedArray = initialHostRowsOrder;
-        console.log("Порядок хостов сброшен в исходный.");
     } else {
         sortedArray = [...currentRows].sort((rowA, rowB) => {
             const valA = rowA.querySelector(".log-field-user")?.textContent.trim().toLowerCase() || "";
@@ -257,4 +209,209 @@ async function submitDeleteHost(event, id, name) {
         
         if (card) card.classList.remove('blur-[2px]', 'opacity-60', 'pointer-events-none');
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////  lazyloading
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const pageState = {
+    searchString: "",
+    offset: 20, 
+    limit: 20,
+    isLoading: false,
+    hasMoreData: true
+};
+
+let hostTemplateNode = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const firstRow = document.querySelector("#logs-table-body > div") || document.querySelector("[id^='host-card-']");
+    if (firstRow) {
+        hostTemplateNode = firstRow.cloneNode(true);
+    } 
+
+    initHostsInfiniteScroll();
+});
+
+function initHostsInfiniteScroll() {
+    const anchor = document.getElementById("scroll-anchor");
+    const loader = document.getElementById("scroll-loader");
+
+    if (!anchor || !loader) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !pageState.isLoading && pageState.hasMoreData) {
+                syncHostsData(loader);
+            }
+        });
+    }, {
+        rootMargin: "0px 0px 200px 0px"
+    });
+
+    observer.observe(anchor);
+}
+
+function syncHostsData(loader) {
+    if (pageState.isLoading || !pageState.hasMoreData) return;
+
+    pageState.isLoading = true;
+
+    if (loader) {
+        loader.classList.remove("hidden");
+        loader.textContent = "⏳ Загрузка хостов...";
+    }
+
+
+    fetch(`?handler=LoadMore&offset=${pageState.offset}&searchString=${encodeURIComponent(pageState.searchString)}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`Ошибка сети: статус ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+
+            const container = document.getElementById("logs-table-body");
+            if (!container || !hostTemplateNode) return;
+
+            if (!data || data.length === 0) {
+                pageState.hasMoreData = false;
+                if (loader) loader.textContent = "Все хосты загружены";
+
+                const counterBadge = document.getElementById("universal-counter-badge");
+                if (counterBadge) {
+                    counterBadge.textContent = container.children.length;
+                }
+                return;
+            }
+
+            data.forEach(item => {
+                const clone = hostTemplateNode.cloneNode(true);
+
+                clone.setAttribute("id", `host_card_${item.id}`);
+                clone.setAttribute("id", `host-card-${item.id}`); 
+
+                const deleteBtn = clone.querySelector("button[onclick*='submitDeleteHost']");
+                if (deleteBtn) {
+                    deleteBtn.setAttribute("onclick", `submitDeleteHost(event, ${item.id}, '${item.name}')`);
+                }
+
+                const userField = clone.querySelector(".log-field-user");
+                if (userField) userField.textContent = item.name;
+
+                const purposeField = clone.querySelector(".log-field-purpose");
+                if (purposeField) purposeField.textContent = `Назначение: ${item.purpose || ""}`;
+
+                const phoneField = clone.querySelector(".log-field-phone");
+                if (phoneField) phoneField.textContent = item.ip;
+
+                const osNameField = clone.querySelector(".log-field-os-name");
+                if (osNameField) osNameField.textContent = item.osName;
+
+                const osVerField = clone.querySelector(".log-field-os-ver");
+                if (osVerField) osVerField.textContent = `v.${item.osVer}`;
+
+                const osTypeField = clone.querySelector(".log-field-os-type");
+                if (osTypeField) osTypeField.textContent = `build.${item.osType}`;
+
+                const descField = clone.querySelector(".log-field-description");
+                if (descField) {
+                    descField.textContent = item.notes;
+                    descField.setAttribute("title", item.notes || "");
+                }
+
+                const enterpriseField = clone.querySelector(".log-field-entity");
+                if (enterpriseField) enterpriseField.textContent = item.enterpriseName + ' (изменить &rarr;)';
+
+                const entLink = clone.querySelector("a[href*='/EnterpriseDetails']");
+                if (entLink) {
+                    entLink.href = `/EnterpriseDetails?id=${item.enterpriseId}`;
+                }
+
+                const timeField = clone.querySelector(".data-copy-green-class:last-child");
+                if (timeField) timeField.textContent = item.createdAt;
+
+                container.appendChild(clone);
+            });
+
+            pageState.offset += data.length;
+
+            if (data.length < pageState.limit) {
+                pageState.hasMoreData = false;
+                if (loader) loader.textContent = "Все хосты загружены";
+            }
+
+            const counterBadge = document.getElementById("universal-counter-badge");
+            if (counterBadge) {
+                counterBadge.textContent = container.children.length;
+            }
+        })
+        .catch(error => {
+            if (loader) loader.textContent = "❌ Ошибка загрузки";
+        })
+        .finally(() => {
+            pageState.isLoading = false;
+        });
+}
+
+function applyLiveFilter() {
+    const container = document.getElementById("logs-table-body");
+    const loader = document.getElementById("scroll-loader");
+    const searchInput = document.getElementById("universal-search-input");
+
+    if (!container) return;
+
+    pageState.searchString = searchInput ? searchInput.value.trim() : "";
+
+    container.innerHTML = "";
+    pageState.offset = 0;
+    pageState.hasMoreData = true;
+    pageState.isLoading = false;
+
+    syncHostsData(loader);
+}
+
+function createDebounceHandler(callback, delay = 400) {
+    let timeoutId = null;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => callback(...args), delay);
+    };
+}
+
+const handleSearchInput = createDebounceHandler(() => {
+    applyLiveFilter();
+});
+
+const globalSearchInput = document.getElementById("universal-search-input");
+if (globalSearchInput) {
+    globalSearchInput.addEventListener("input", handleSearchInput);
 }

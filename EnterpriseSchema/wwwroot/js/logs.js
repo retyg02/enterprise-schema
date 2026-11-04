@@ -1,11 +1,11 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+﻿const searchInput = document.getElementById("universal-search-input");
 
-    const searchInput = document.getElementById("universal-search-input");
+document.addEventListener("DOMContentLoaded", () => {
+    
     const kbdShortcut = document.getElementById("universal-kbd-shortcut");
     const tableContainer = document.getElementById("logs-main-container");
     const counterBadge = document.getElementById("universal-counter-badge");
     const noResultsBlock = document.getElementById("logs-no-results");
-
 
     const allRows = tableContainer ? Array.from(tableContainer.querySelectorAll(".logs-row")) : [];
 
@@ -39,70 +39,14 @@
         searchInput.addEventListener("blur", updateSearchUI);
         searchInput.addEventListener("input", () => {
             updateSearchUI();
-            applyLiveFilter(); 
+            //applyLiveFilter(); 
         });
     }
 
-    function applyLiveFilter() {
-        if (!searchInput || allRows.length === 0) return;
-
-        const searchText = searchInput.value.toLowerCase().trim();
-        let visibleCount = 0;
-
-        allRows.forEach(row => {
-            const userText = row.querySelector(".log-field-user")?.textContent.toLowerCase() || "";
-            const entityText = row.querySelector(".log-field-entity")?.textContent.toLowerCase() || "";
-            const descText = row.querySelector(".log-field-description")?.textContent.toLowerCase() || "";
-            const actionText = row.querySelector(".log-field-action")?.textContent.toLowerCase() || "";
-
-            const matchesSearch =
-                userText.includes(searchText) ||
-                entityText.includes(searchText) ||
-                descText.includes(searchText) ||
-                actionText.includes(searchText);
-
-            if (matchesSearch) {
-                row.style.setProperty("display", "", "important"); 
-                visibleCount++;
-            } else {
-                row.style.setProperty("display", "none", "important");
-            }
-        });
-
-        if (counterBadge) {
-            counterBadge.textContent = visibleCount;
-        }
-
-        if (noResultsBlock) {
-            if (visibleCount === 0) {
-                noResultsBlock.classList.remove("hidden");
-                noResultsBlock.classList.add("flex");
-            } else {
-                noResultsBlock.classList.remove("flex");
-                noResultsBlock.classList.add("hidden");
-            }
-        }
-    }
+    
 
     updateSearchUI();
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 let currentSortField = "none";
@@ -217,3 +161,208 @@ document.addEventListener("click", (e) => {
     const field = sortBtn.getAttribute("data-sort-field");
     sortLogs(field);
 });
+
+///////////////////////////////////////////////////////////////////////////////////// lazyloading
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const pageState = {
+    searchString: "",
+    offset: 20,
+    limit: 20,
+    isLoading: false,
+    hasMoreData: true
+};
+
+let logTemplateNode = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const firstRow = document.querySelector(".logs-row");
+    if (firstRow) {
+        logTemplateNode = firstRow.cloneNode(true);
+    } 
+
+    initLogsInfiniteScroll();
+});
+
+function initLogsInfiniteScroll() {
+    const anchor = document.getElementById("scroll-anchor");
+    const loader = document.getElementById("scroll-loader");
+
+    if (!anchor || !loader) {
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !pageState.isLoading && pageState.hasMoreData) {
+                syncData(loader);
+            }
+        });
+    }, {
+        rootMargin: "0px 0px 200px 0px" 
+    });
+
+    observer.observe(anchor);
+}
+
+function syncData(loader) {
+    if (pageState.isLoading || !pageState.hasMoreData) return;
+
+    pageState.isLoading = true;
+
+    if (loader) {
+        loader.classList.remove("hidden");
+        loader.textContent = "⏳ Загрузка новых логов...";
+    }
+
+
+    fetch(`?handler=LoadMore&offset=${pageState.offset}&searchString=${encodeURIComponent(pageState.searchString)}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`Ошибка сети: статус ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+
+            const container = document.getElementById("logs-main-container");
+            if (!container || !logTemplateNode) return;
+
+            if (!data || data.length === 0) {
+                pageState.hasMoreData = false;
+                if (loader) loader.textContent = "Все логи загружены";
+
+                const counterBadge = document.getElementById("universal-counter-badge");
+                if (counterBadge) {
+                    counterBadge.textContent = document.querySelectorAll(".logs-row").length;
+                }
+
+                return;
+            }
+
+
+            data.forEach((item, index) => {
+                const clone = logTemplateNode.cloneNode(true);
+
+                const userfield = clone.querySelector(".log-field-user");
+                if (userfield) userfield.textContent = item.userId;
+
+                const entityfield = clone.querySelector(".log-field-entity");
+                if (entityfield) {
+                    entityfield.textContent = item.entityRealName;
+                    entityfield.setAttribute("title", item.entityRealName);
+                }
+
+                const actionBadge = clone.querySelector(".log-field-action");
+                if (actionBadge) {
+                    actionBadge.className = "log-field-action inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium";
+
+                    if (item.actionType === "Create" || item.actionType === "Создание") {
+                        actionBadge.classList.add("bg-emerald-50", "dark:bg-emerald-950/40", "text-emerald-600", "dark:text-emerald-400");
+                        actionBadge.textContent = "Создание";
+                    } else if (item.actionType === "Update" || item.actionType === "Изменение") {
+                        actionBadge.classList.add("bg-amber-50", "dark:bg-amber-950/40", "text-amber-600", "dark:text-amber-400");
+                        actionBadge.textContent = "Изменение";
+                    } else if (item.actionType === "Delete" || item.actionType === "Удаление") {
+                        actionBadge.classList.add("bg-red-50", "dark:bg-red-950/40", "text-red-600", "dark:text-red-400");
+                        actionBadge.textContent = "Удаление";
+                    } else {
+                        actionBadge.textContent = item.actionType;
+                    }
+                }
+
+                const descfield = clone.querySelector(".log-field-description");
+                if (descfield) descfield.textContent = item.description || "—";
+
+                const timefield = clone.querySelector(".data-copy-green-class");
+                if (timefield) timefield.textContent = item.timestamp;
+
+                container.appendChild(clone);
+            });
+
+            pageState.offset += data.length;
+
+            if (data.length < pageState.limit) {
+                pageState.hasMoreData = false;
+                if (loader) {
+                    loader.classList.remove("animate-pulse");
+                    loader.textContent = "Все логи загружены";
+                }
+            }
+
+            const counterBadge = document.getElementById("universal-counter-badge");
+            if (counterBadge) {
+                counterBadge.textContent = document.querySelectorAll(".logs-row").length;
+            }
+        })
+        .catch(error => {
+            if (loader) loader.textContent = "❌ Ошибка загрузки логов";
+        })
+        .finally(() => {
+            pageState.isLoading = false;
+        });
+}
+
+function applyLiveFilter() {
+    const container = document.getElementById("logs-main-container");
+    const loader = document.getElementById("scroll-loader");
+    const searchInput = document.getElementById("universal-search-input");
+
+    if (!container) return;
+
+    pageState.searchString = searchInput ? searchInput.value.trim() : "";
+
+
+    container.innerHTML = "";
+
+    pageState.offset = 0;
+    pageState.hasMoreData = true;
+    pageState.isLoading = false;
+
+    syncData(loader);
+}
+
+function createDebounceHandler(callback, delay = 400) {
+    let timeoutId = null;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => callback(...args), delay);
+    };
+}
+
+const handleSearchInput = createDebounceHandler(() => {
+    applyLiveFilter();
+});
+
+const globalSearchInput = document.getElementById("universal-search-input");
+if (globalSearchInput) {
+    globalSearchInput.addEventListener("input", handleSearchInput);
+}

@@ -2329,3 +2329,32 @@ body.dark-mode label.custom-file-btn svg {
         color: #ffffff !important;
         background-color: #374151 !important;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+body.dark-mode .enterprise-view-wrapper,
+body.dark-mode .enterprise-view-wrapper:hover {
+    background-color: transparent !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+body.dark-mode .enterprise-card-item,
+body.dark-mode [id^="enterprise-card-"] {
+    background-color: #111827 !important; 
+}
+
+    body.dark-mode .enterprise-card-item:hover,
+    body.dark-mode [id^="enterprise-card-"]:hover {
+        background-color: #111827 !important; 
+    }
