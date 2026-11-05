@@ -451,17 +451,18 @@ function syncAccessesData(loader) {
                 if (descField) {
                     descField.textContent = item.note || "—";
                     descField.setAttribute("title", item.note || "");
-                    console.log(22);
+                    console.warn(22);
                 }
-                else { console.log(12); }
+                else { console.warn(12); }
 
                 const entLink = clone.querySelector(".js-enterprise-link");
                 if (entLink) {
                     entLink.href = `/EnterpriseDetails?id=${item.enterpriseId}`;
                     entLink.textContent = item.enterpriseName;
-                    console.log(22);
+                    console.warn(22);
                 }
-                else { console.log(12); }
+                else { console.warn(12); }
+                console.info(item);
                 container.appendChild(clone);
             });
 
