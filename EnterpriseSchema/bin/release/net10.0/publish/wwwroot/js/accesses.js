@@ -438,7 +438,7 @@ function syncAccessesData(loader) {
                     passSpan.setAttribute("data-raw-password", item.pass);
                     passSpan.classList.remove("bg-emerald-500", "text-white");
                 }
-
+                console.log(item);
                 const togglePassBtn = clone.querySelector(".js_btn_toggle_password") || clone.querySelector(".btn-toggle-password");
                 if (togglePassBtn) {
                     const openEye = togglePassBtn.querySelector(".icon-eye-open");
@@ -446,19 +446,23 @@ function syncAccessesData(loader) {
                     if (openEye) openEye.classList.remove("hidden");
                     if (closedEye) closedEye.classList.add("hidden");
                 }
-
+                
                 const descField = clone.querySelector(".log-field-description");
                 if (descField) {
                     descField.textContent = item.note || "—";
                     descField.setAttribute("title", item.note || "");
+                    console.warn(22);
                 }
+                else { console.warn(12); }
 
                 const entLink = clone.querySelector(".js-enterprise-link");
                 if (entLink) {
                     entLink.href = `/EnterpriseDetails?id=${item.enterpriseId}`;
                     entLink.textContent = item.enterpriseName;
+                    console.warn(22);
                 }
-
+                else { console.warn(12); }
+                console.info(item);
                 container.appendChild(clone);
             });
 
