@@ -446,19 +446,22 @@ function syncAccessesData(loader) {
                     if (openEye) openEye.classList.remove("hidden");
                     if (closedEye) closedEye.classList.add("hidden");
                 }
-
+                
                 const descField = clone.querySelector(".log-field-description");
                 if (descField) {
                     descField.textContent = item.note || "—";
                     descField.setAttribute("title", item.note || "");
+                    console.log(22);
                 }
+                else { console.log(12); }
 
                 const entLink = clone.querySelector(".js-enterprise-link");
                 if (entLink) {
                     entLink.href = `/EnterpriseDetails?id=${item.enterpriseId}`;
                     entLink.textContent = item.enterpriseName;
+                    console.log(22);
                 }
-
+                else { console.log(12); }
                 container.appendChild(clone);
             });
 

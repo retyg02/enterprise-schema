@@ -112,7 +112,7 @@ namespace EnterpriseSchema.Data
                     Address = "192.168.0.1",
                     Port = 22,
                     Login = "root",
-                    Pass = CryptoHelper.Encrypt("pass"),
+                    Pass = CryptoHelper.Encrypt("root_root_pass_pass_2026"),
                     Note = "Доступ к терминалу",
                     HostId = 1,
                     //EnterpriseId = 1
@@ -124,7 +124,7 @@ namespace EnterpriseSchema.Data
                     Address = "192.168.0.2",
                     Port = 3306,
                     Login = "db_admin",
-                    Pass = CryptoHelper.Encrypt("mysql_pass"),
+                    Pass = CryptoHelper.Encrypt("mysql_pass_root_root_db_2026"),
                     Note = "Доступ к MySQL",
                     HostId = 2,
                     //EnterpriseId = 2

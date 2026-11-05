@@ -78,9 +78,9 @@ namespace EnterpriseSchema.Migrations
                             HostId = 1,
                             Login = "root",
                             Note = "Доступ к терминалу",
-                            Pass = "/lRxrxhBjAA8xB8Hru6kuA==",
+                            Pass = "7bEYaKlXi+jQKzOA33LsrptJR1ivDxmJHHMx+J+v+p63bI0LRfOLwFZWkWSYonus",
                             Port = 22,
-                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(4498)
+                            UpdatedAtUtc = new DateTime(2026, 11, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(7978)
                         },
                         new
                         {
@@ -90,9 +90,9 @@ namespace EnterpriseSchema.Migrations
                             HostId = 2,
                             Login = "db_admin",
                             Note = "Доступ к MySQL",
-                            Pass = "579peqYad4xZUbKwgDrEwg==",
+                            Pass = "sdXT7lVlkR4M0eVAVte0ggCVF4mYISPs6TtbEUkhe0gIXUNUN/sfckz2P6IqZ3PK",
                             Port = 3306,
-                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 418, DateTimeKind.Utc).AddTicks(3525)
+                            UpdatedAtUtc = new DateTime(2026, 11, 5, 10, 15, 3, 889, DateTimeKind.Utc).AddTicks(2313)
                         });
                 });
 
@@ -272,20 +272,20 @@ namespace EnterpriseSchema.Migrations
                             Id = 1,
                             CityId = 1,
                             Contact = "Иванов Иван Иванович",
-                            CreatedAtUtc = new DateTime(2026, 7, 30, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(8816),
+                            CreatedAtUtc = new DateTime(2026, 8, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(2806),
                             Name = "Завод1",
                             Note = "Заметка1",
-                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(7317)
+                            UpdatedAtUtc = new DateTime(2026, 11, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(1438)
                         },
                         new
                         {
                             Id = 2,
                             CityId = 2,
                             Contact = "Петров Петр Петрович",
-                            CreatedAtUtc = new DateTime(2026, 10, 29, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(9322),
+                            CreatedAtUtc = new DateTime(2026, 11, 4, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(3237),
                             Name = "Завод2",
                             Note = "Заметка2",
-                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 414, DateTimeKind.Utc).AddTicks(9318)
+                            UpdatedAtUtc = new DateTime(2026, 11, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(3234)
                         });
                 });
 
@@ -357,7 +357,7 @@ namespace EnterpriseSchema.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTime(2026, 8, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(3220),
+                            CreatedAtUtc = new DateTime(2026, 9, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(6817),
                             EnterpriseId = 1,
                             Ip = "192.168.0.1",
                             Name = "Сервер1",
@@ -367,12 +367,12 @@ namespace EnterpriseSchema.Migrations
                             OsType = "04",
                             OsVer = "22",
                             Purpose = "СЦ",
-                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(494)
+                            UpdatedAtUtc = new DateTime(2026, 11, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(4324)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTime(2026, 10, 25, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(3531),
+                            CreatedAtUtc = new DateTime(2026, 10, 31, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(7106),
                             EnterpriseId = 2,
                             Ip = "192.168.0.2",
                             Name = "Сервер2",
@@ -382,7 +382,7 @@ namespace EnterpriseSchema.Migrations
                             OsType = "Bullseye",
                             OsVer = "12",
                             Purpose = "ВС",
-                            UpdatedAtUtc = new DateTime(2026, 10, 30, 14, 34, 12, 415, DateTimeKind.Utc).AddTicks(3528)
+                            UpdatedAtUtc = new DateTime(2026, 11, 5, 10, 15, 3, 886, DateTimeKind.Utc).AddTicks(7103)
                         });
                 });
 
@@ -484,7 +484,7 @@ namespace EnterpriseSchema.Migrations
                             Id = 1,
                             Login = "login",
                             Name = "User",
-                            Pass = "AQAAAAIAAYagAAAAEPJ1ijI8+75G0AZzqDBQmcn5Zn8N+lLXkybu4F2HZupxLe311gEJJd8Tj+dwlL9arg=="
+                            Pass = "AQAAAAIAAYagAAAAEEnuq6Y+R6GNnCv3YYnxMS6nECvbBVDSb3DCgWsljIANxdrm247b6Mh9hpYMPheBwQ=="
                         });
                 });
 
